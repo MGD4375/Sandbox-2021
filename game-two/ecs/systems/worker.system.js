@@ -13,6 +13,7 @@ import Food from "../components/food.component.js";
 import Cargo from "../components/cargo.component.js";
 import TargetState from "../components/targetState.component.js";
 import Energy from "../components/energy.component.js";
+import Age from "../components/age.component.js";
 
 export default class WorkerSystem extends System {
 
@@ -27,9 +28,11 @@ export default class WorkerSystem extends System {
             var intent = entity.getMutableComponent(Intent)
             var transform = entity.getComponent(Transform)
             var colour = entity.getComponent(Colour)
+            var age = entity.getComponent(Age)
             var cargo = entity.getMutableComponent(Cargo)
             var velocity = entity.getMutableComponent(Velocity)
             var targetState = entity.getMutableComponent(TargetState)
+
 
             //  Travel
             if (intent.value === Intent.EXPLORE) {
@@ -37,12 +40,9 @@ export default class WorkerSystem extends System {
                 velocity.value = 0.5
 
                 if (cargo.value > 0) {
-
-                } else {
+                } else if (age.value % 10 === 0) {
                     targetState.ref = this.queries.food.results.find((fEntity) => { return transform.distanceTo(fEntity.getComponent(Transform)) < 100 })
-                    if (targetState.ref) {
-                        intent.value = Intent.GOTO
-                    }
+                    if (targetState.ref) { intent.value = Intent.GOTO }
                 }
 
             } else if (cargo.value && (!targetState.ref || !targetState.ref.alive)) {
@@ -119,7 +119,7 @@ export default class WorkerSystem extends System {
 }
 
 WorkerSystem.queries = {
-    subjects: { components: [Worker, Velocity, Angle, Transform, Colour, Cargo, SpriteState, TargetState] },
+    subjects: { components: [Worker, Velocity, Angle, Transform, Colour, Cargo, SpriteState, TargetState, Age] },
     food: { components: [Food, Transform, SpriteState] },
     queens: { components: [Queen] },
 };

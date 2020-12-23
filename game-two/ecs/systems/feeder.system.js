@@ -16,7 +16,7 @@ export default class FeederSystem extends System {
         this.queries.subjects.results.forEach(entity => {
             const age = entity.getComponent(Age)
 
-            if (age.value % 10 === 0) {
+            if (age.value % 5 === 0) {
                 FoodTemplate.create(this.world,
                     random(10, CONFIG.WIDTH - 10),
                     random(10, CONFIG.HEIGHT - 10)

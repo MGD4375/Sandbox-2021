@@ -81,7 +81,7 @@ function setup() {
     QueenTemplate.create(world,
       random(0, appConfig.WIDTH),
       random(0, appConfig.HEIGHT),
-      0
+      random(0, 360)
     )
 
   }

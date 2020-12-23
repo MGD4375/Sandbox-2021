@@ -33,7 +33,7 @@ export default class SoldierSystem extends System {
 
             if (!parentState.ref) {
                 parentState.ref = this.queries.queens.results
-                    .filter(it => it.getComponent(Colour).difference(colour) < 0.2 && it.getComponent(Transform).distanceTo(transform) < 120)
+                    .filter(it => it.getComponent(Colour).difference(colour) < 0.2 && it.getComponent(Transform).distanceTo(transform) < 300)
                     .sort((a, b) => {
                         return a.getComponent(Transform).distanceTo(transform) - b.getComponent(Transform).distanceTo(transform)
                     })[0]
@@ -66,16 +66,20 @@ export default class SoldierSystem extends System {
 
             }
 
-            const mySprite = entity.getComponent(SpriteState)
-            const toKill = this.queries.victims.results
-                .filter(it => it.getComponent(Colour).difference(colour) > 0.3)
-                .find(it => {
-                    const otherSprite = it.getComponent(SpriteState)
-                    return mySprite.collides(otherSprite.ref)
-                })
-            if (toKill) {
-                toKill.remove()
-
+            if (age.value % 10) {
+                const mySprite = entity.getComponent(SpriteState)
+                const toKill = this.queries.victims.results
+                    .filter(it => it.getComponent(Colour).difference(colour) > 0.3)
+                    .find(it => {
+                        const otherSprite = it.getComponent(SpriteState)
+                        return mySprite.collides(otherSprite.ref)
+                    })
+                if (toKill) {
+                    toKill.remove()
+                    if (toKill.getComponent(Soldier)) {
+                        entity.remove()
+                    }
+                }
             }
 
             //  Bounds
