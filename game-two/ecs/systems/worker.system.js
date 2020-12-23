@@ -93,12 +93,18 @@ export default class WorkerSystem extends System {
                 const entitySprite = entity.getComponent(SpriteState)
                 const targetSprite = targetState.ref.getComponent(SpriteState)
 
-                if (entitySprite.collides(targetSprite.ref)) {
-                    var queenEnergy = targetState.ref.getMutableComponent(Energy)
-                    queenEnergy.value += cargo.value
-                    cargo.value = 0
-                    targetState.ref = null
-                    intent.value = Intent.EXPLORE
+                try {
+                    if (entitySprite.collides(targetSprite.ref)) {
+                        var queenEnergy = targetState.ref.getMutableComponent(Energy)
+                        queenEnergy.value += cargo.value
+                        cargo.value = 0
+                        targetState.ref = null
+                        intent.value = Intent.EXPLORE
+                    }
+                } catch (ex) {
+                    console.log('ngl, not sure why this happens.', ex)
+                    entity.remove()
+
                 }
             }
 

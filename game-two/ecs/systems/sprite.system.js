@@ -35,7 +35,7 @@ export default class SpriteSystem extends System {
         this.queries.deletes.results.forEach(entity => {
             var spriteState = entity.getComponent(SpriteState)
             pixiApp.stage.removeChild(spriteState.ref)
-            entity.removeComponent(spriteState);
+            entity.removeComponent(SpriteState);
         });
 
         this.queries.updates.results.forEach(entity => {

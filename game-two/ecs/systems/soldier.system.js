@@ -31,7 +31,7 @@ export default class SoldierSystem extends System {
             var velocity = entity.getMutableComponent(Velocity)
             var parentState = entity.getMutableComponent(ParentState)
 
-            if (!parentState.ref && age.value < 10) {
+            if (!parentState.ref) {
                 parentState.ref = this.queries.queens.results
                     .filter(it => it.getComponent(Colour).difference(colour) < 0.2 && it.getComponent(Transform).distanceTo(transform) < 120)
                     .sort((a, b) => {
