@@ -79,7 +79,7 @@ function setup() {
 
   FeederTemplate.create(world)
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 20; i++) {
     QueenTemplate.create(world,
       random(0, appConfig.WIDTH),
       random(0, appConfig.HEIGHT),
