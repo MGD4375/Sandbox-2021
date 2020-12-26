@@ -7,8 +7,6 @@ import pixiApp from "../singletons/pixi.js";
 import Colour from "../components/colour.component.js";
 import Angle from "../components/angle.component.js";
 import Velocity from "../components/velocity.component.js";
-import EggRenderSystem from "./drawable.system.js";
-import Egg from "../components/egg.component.js";
 import Drawable from "../components/drawable.component.js";
 
 export default class SpriteSystem extends System {
@@ -39,7 +37,6 @@ export default class SpriteSystem extends System {
         });
 
         this.queries.updates.results.forEach(entity => {
-            var spriteInfo = entity.getComponent(Sprite)
             var velocity = entity.getComponent(Velocity)
             var angle = entity.getComponent(Angle)
             var transform = entity.getComponent(Transform)

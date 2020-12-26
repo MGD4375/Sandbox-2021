@@ -36,6 +36,7 @@ import FoodTemplate from "./ecs/assemblages/food.assemblage.js";
 import CONFIG from "./app.config.js";
 import Ant from "./ecs/components/ant.component.js";
 import ParentState from "./ecs/components/parent.component.js";
+import TerritorySystem from "./ecs/systems/territory.system.js";
 
 const world = new World()
   .registerComponent(Queen)
@@ -68,6 +69,7 @@ const world = new World()
   .registerSystem(SoldierSystem)
   .registerSystem(MotionSystem)
   .registerSystem(AgeSystem)
+  .registerSystem(TerritorySystem)
 
 PIXI.Loader.shared
   .add("resources/sprites/ant-walk.json")
@@ -77,7 +79,7 @@ function setup() {
 
   FeederTemplate.create(world)
 
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 30; i++) {
     QueenTemplate.create(world,
       random(0, appConfig.WIDTH),
       random(0, appConfig.HEIGHT),
