@@ -15,9 +15,10 @@ export default class TerritorySystem extends System {
         cvs.height = pixiApp.view.height
         cvs.width = pixiApp.view.width
         this.queenCount = 0
-
         this.cvs = cvs
         this.ctx = cvs.getContext("2d");
+
+        this.regionTexture = null
 
 
     }
@@ -56,14 +57,10 @@ export default class TerritorySystem extends System {
                 for (var i = 0; i < n; i++) {
                     d = Metric(X[i] - x, Y[i] - y, mt)
                     if (d < dm) { dm = d; j = i; }
-                }//fend i
-                // me.ctx.fillStyle = C[j];
-                // me.ctx.fillRect(x, y, 1, 1);
+                }
                 setPixel(me.imageData, x, y, C[j].r, C[j].g, C[j].b, 255)
-            }//fend x
-        }//fend y
-
-
+            }
+        }
 
         me.ctx.putImageData(me.imageData, 0, 0)
 
@@ -71,6 +68,18 @@ export default class TerritorySystem extends System {
         for (var i = 0; i < n; i++) {
             me.ctx.fillRect(X[i], Y[i], 3, 3);
         }
+
+        if (this.regionTexture) {
+            pixiApp.stage.removeChild(this.regionTexture)
+            this.texture.update()
+        } else {
+            this.texture = PIXI.Texture.from(me.cvs)
+
+        }
+
+        this.regionTexture = new PIXI.Sprite(this.texture);
+        this.regionTexture.alpha = .2
+        pixiApp.stage.addChild(this.regionTexture)
 
     }
 }

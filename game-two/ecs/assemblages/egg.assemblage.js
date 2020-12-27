@@ -9,14 +9,13 @@ import Transform from "../components/transform.component.js";
 import Velocity from "../components/velocity.component.js";
 
 export default class EggTemplate {
-    static create(world, x, y, hue, parentId) {
+    static create(world, x, y, hue) {
         world.createEntity()
             .addComponent(Egg)
             .addComponent(Transform, Transform.create(x, y))
             .addComponent(Colour, Colour.create(hue))
             .addComponent(Angle)
             .addComponent(Ant)
-            .addComponent(ParentState, ParentState.create(parentId))
             .addComponent(Velocity)
             .addComponent(Age)
             .addComponent(Drawable, Drawable.create(3))

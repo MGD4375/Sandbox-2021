@@ -13,7 +13,7 @@ import Transform from "../components/transform.component.js";
 import Velocity from "../components/velocity.component.js";
 
 export default class SoldierTemplate {
-    static create(world, x, y, hue, parentId) {
+    static create(world, x, y, hue) {
         world.createEntity()
             .addComponent(Soldier)
             .addComponent(Ant)

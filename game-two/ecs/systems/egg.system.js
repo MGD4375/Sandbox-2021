@@ -8,7 +8,6 @@ import Egg from "../components/egg.component.js";
 import QueenTemplate from "../assemblages/queen.assemblage.js";
 import WorkerTemplate from "../assemblages/worker.assemblage.js";
 import SoldierTemplate from "../assemblages/soldier.assemblage.js";
-import ParentState from "../components/parent.component.js";
 
 export default class EggSystem extends System {
 
@@ -22,13 +21,12 @@ export default class EggSystem extends System {
             var age = entity.getComponent(Age)
             var transform = entity.getMutableComponent(Transform)
             var colour = entity.getComponent(Colour)
-            var parent = entity.getComponent(ParentState)
 
             var num = random(0, 10)
 
             if (age.value > 1000) {
                 if (num >= 9) QueenTemplate.create(this.world, transform.x, transform.y, colour.hue)
-                else if (num >= 5) SoldierTemplate.create(this.world, transform.x, transform.y, colour.hue, parent.id)
+                else if (num >= 5) SoldierTemplate.create(this.world, transform.x, transform.y, colour.hue)
                 else WorkerTemplate.create(this.world, transform.x, transform.y, colour.hue)
                 entity.remove()
             }

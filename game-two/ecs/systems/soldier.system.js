@@ -1,4 +1,4 @@
-import { System } from "../../node_modules/ecsy/build/ecsy.module.js";
+import { Not, System } from "../../node_modules/ecsy/build/ecsy.module.js";
 import Transform from "../components/transform.component.js";
 import SpriteState from "../components/sprite.state.js";
 import Velocity from "../components/velocity.component.js";
@@ -22,6 +22,10 @@ export default class SoldierSystem extends System {
     }
 
     execute() {
+        this.queries.tidyUp.results.forEach(entity => {
+            entity.removeComponent(ParentState)
+        })
+
         this.queries.subjects.results.forEach(entity => {
             var angle = entity.getMutableComponent(Angle)
             var intent = entity.getMutableComponent(Intent)
@@ -95,4 +99,5 @@ SoldierSystem.queries = {
     subjects: { components: [Soldier, Velocity, Angle, Transform, Colour, SpriteState, TargetState, ParentState] },
     victims: { components: [Ant, Transform, SpriteState] },
     queens: { components: [Queen] },
+    tidyUp: { components: [Not(Soldier), ParentState] }
 };

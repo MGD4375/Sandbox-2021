@@ -10,15 +10,16 @@ export default class DrawableSystem extends System {
     execute() {
         this.queries.creates.results.forEach(entity => {
             var colour = entity.getComponent(Colour)
+            var drawable = entity.getComponent(Drawable)
             var transform = entity.getComponent(Transform)
 
             var graphics = new PIXI.Graphics();
             graphics.beginFill(0xFFFFFF);
-            graphics.lineStyle(2, 0x000000);
+            graphics.lineStyle(.5, 0x000000);
             graphics.drawCircle(
-                0 - (0.5 * 3),
-                0 - (0.5 * 3),
-                3);
+                0 - (0.5 * drawable.radius),
+                0 - (0.5 * drawable.radius),
+                drawable.radius);
             graphics.name = entity.id
             graphics.description = 'drawable'
             graphics.position.x = transform.x

@@ -21,7 +21,7 @@ export default class FoodTemplate {
             .addComponent(Food)
             .addComponent(Transform, Transform.create(x, y))
             .addComponent(Colour, Colour.create(Colour.GREEN))
-            .addComponent(Drawable, Drawable.create(3))
+            .addComponent(Drawable, Drawable.create(1.5))
 
     }
 }
