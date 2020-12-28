@@ -3,6 +3,7 @@ import random from "../../random.js";
 import Age from "../components/age.component.js";
 import Angle from "../components/angle.component.js";
 import Ant from "../components/ant.component.js";
+import { Collisions } from "../components/collisions.component.js";
 import Colour from "../components/colour.component.js";
 import Energy from "../components/energy.component.js";
 import Intent from "../components/intent.component.js";
@@ -17,6 +18,7 @@ export default class QueenTemplate {
             .addComponent(Queen)
             .addComponent(Transform, Transform.create(x, y))
             .addComponent(Colour, Colour.create(hue))
+            .addComponent(Collisions)
             .addComponent(Velocity)
             .addComponent(Intent)
             .addComponent(Ant)

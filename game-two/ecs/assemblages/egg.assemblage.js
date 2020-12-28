@@ -1,6 +1,7 @@
 import Age from "../components/age.component.js";
 import Angle from "../components/angle.component.js";
 import Ant from "../components/ant.component.js";
+import { Collisions } from "../components/collisions.component.js";
 import Colour from "../components/colour.component.js";
 import Drawable from "../components/drawable.component.js";
 import Egg from "../components/egg.component.js";
@@ -15,6 +16,7 @@ export default class EggTemplate {
             .addComponent(Transform, Transform.create(x, y))
             .addComponent(Colour, Colour.create(hue))
             .addComponent(Angle)
+            .addComponent(Collisions)
             .addComponent(Ant)
             .addComponent(Velocity)
             .addComponent(Age)

@@ -13,6 +13,7 @@ import Soldier from "../components/soldier.component.js";
 import Ant from "../components/ant.component.js";
 import ParentState from "../components/parent.component.js";
 import Age from "../components/age.component.js";
+import { CollisionsState } from "../components/collisions.component.js";
 
 export default class SoldierSystem extends System {
 
@@ -70,21 +71,14 @@ export default class SoldierSystem extends System {
 
             }
 
-            if (age.value % 10) {
-                const mySprite = entity.getComponent(SpriteState)
-                const toKill = this.queries.victims.results
-                    .filter(it => it.getComponent(Colour).difference(colour) > 0.3)
-                    .find(it => {
-                        const otherSprite = it.getComponent(SpriteState)
-                        return mySprite.collides(otherSprite.ref)
-                    })
-                if (toKill) {
-                    toKill.remove()
-                    if (toKill.getComponent(Soldier)) {
-                        entity.remove()
-                    }
-                }
-            }
+
+            const collisions = entity.getComponent(CollisionsState);
+            collisions.value
+                .filter(it => it.alive && it.getComponent(Colour).difference(colour) > 0.3)
+                .forEach(it => {
+                    it.remove()
+                    if (it.getComponent(Soldier)) { entity.remove() }
+                })
 
             //  Bounds
             if (transform.x < 0 || transform.x > CONFIG.WIDTH || transform.y < 0 || transform.y > CONFIG.HEIGHT) {
@@ -96,7 +90,7 @@ export default class SoldierSystem extends System {
 }
 
 SoldierSystem.queries = {
-    subjects: { components: [Soldier, Velocity, Angle, Transform, Colour, SpriteState, TargetState, ParentState] },
+    subjects: { components: [Soldier, Velocity, Angle, Transform, Colour, SpriteState, TargetState, ParentState, CollisionsState] },
     victims: { components: [Ant, Transform, SpriteState] },
     queens: { components: [Queen] },
     tidyUp: { components: [Not(Soldier), ParentState] }

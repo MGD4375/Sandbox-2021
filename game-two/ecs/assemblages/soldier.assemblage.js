@@ -2,6 +2,7 @@ import random from "../../random.js";
 import Age from "../components/age.component.js";
 import Angle from "../components/angle.component.js";
 import Ant from "../components/ant.component.js";
+import { Collisions } from "../components/collisions.component.js";
 import Colour from "../components/colour.component.js";
 import Energy from "../components/energy.component.js";
 import Intent from "../components/intent.component.js";
@@ -21,6 +22,7 @@ export default class SoldierTemplate {
             .addComponent(Colour, Colour.create(hue))
             .addComponent(Velocity)
             .addComponent(ParentState)
+            .addComponent(Collisions)
             .addComponent(Intent, Intent.create(Intent.PATROL))
             .addComponent(Energy)
             .addComponent(TargetState)

@@ -14,6 +14,7 @@ import Cargo from "../components/cargo.component.js";
 import TargetState from "../components/targetState.component.js";
 import Energy from "../components/energy.component.js";
 import Age from "../components/age.component.js";
+import { CollisionsState } from "../components/collisions.component.js";
 
 export default class WorkerSystem extends System {
 
@@ -75,14 +76,15 @@ export default class WorkerSystem extends System {
             }
 
             if (intent.value === Intent.GOTO && targetState.ref && targetState.ref.alive && targetState.ref.getComponent(Food)) {
-                const entitySprite = entity.getComponent(SpriteState)
-                const targetSprite = targetState.ref.getComponent(SpriteState)
                 try {
-                    if (entitySprite.collides(targetSprite.ref)) {
+                    const collisions = entity.getComponent(CollisionsState);
+                    var cont = collisions.value
+                        .find(it => it === targetState.ref)
+                    if (cont) {
                         cargo.value = 10
                         targetState.ref.remove()
-
                     }
+
                 } catch (ex) {
                     console.log('ngl, not sure why this happens.', ex)
                     entity.remove()
@@ -90,11 +92,11 @@ export default class WorkerSystem extends System {
                 }
             }
             else if (intent.value === Intent.GOTO && targetState.ref && targetState.ref.alive && targetState.ref.getComponent(Queen)) {
-                const entitySprite = entity.getComponent(SpriteState)
-                const targetSprite = targetState.ref.getComponent(SpriteState)
-
                 try {
-                    if (entitySprite.collides(targetSprite.ref)) {
+                    const collisions = entity.getComponent(CollisionsState);
+                    var cont = collisions.value
+                        .find(it => it === targetState.ref)
+                    if (cont) {
                         var queenEnergy = targetState.ref.getMutableComponent(Energy)
                         queenEnergy.value += cargo.value
                         cargo.value = 0
@@ -119,7 +121,7 @@ export default class WorkerSystem extends System {
 }
 
 WorkerSystem.queries = {
-    subjects: { components: [Worker, Velocity, Angle, Transform, Colour, Cargo, SpriteState, TargetState, Age] },
-    food: { components: [Food, Transform, SpriteState] },
+    subjects: { components: [Worker, Velocity, Angle, Transform, Colour, Cargo, TargetState, Age, CollisionsState] },
+    food: { components: [Food, Transform] },
     queens: { components: [Queen] },
 };

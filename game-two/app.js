@@ -37,6 +37,8 @@ import CONFIG from "./app.config.js";
 import Ant from "./ecs/components/ant.component.js";
 import ParentState from "./ecs/components/parent.component.js";
 import TerritorySystem from "./ecs/systems/territory.system.js";
+import { Collisions, CollisionsState } from "./ecs/components/collisions.component.js";
+import CollisionsSystem from "./ecs/systems/collisions.system.js";
 
 const world = new World()
   .registerComponent(Queen)
@@ -55,12 +57,15 @@ const world = new World()
   .registerComponent(Sprite)
   .registerComponent(Soldier)
   .registerComponent(Cargo)
+  .registerComponent(Collisions)
+  .registerComponent(CollisionsState)
   .registerComponent(SpriteState)
   .registerComponent(Transform)
   .registerComponent(Velocity)
   .registerComponent(Angle)
   .registerSystem(SpriteSystem)
   .registerSystem(DrawableSystem)
+  .registerSystem(CollisionsSystem)
   .registerSystem(QueenSystem)
   .registerSystem(WorkerSystem)
   .registerSystem(FeederSystem)
@@ -88,7 +93,7 @@ function setup() {
 
   }
 
-  for (let foo = 0; foo < 100; foo++) {
+  for (let foo = 0; foo < 500; foo++) {
     FoodTemplate.create(world,
       random(10, CONFIG.WIDTH - 10),
       random(10, CONFIG.HEIGHT - 10)

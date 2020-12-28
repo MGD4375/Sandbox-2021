@@ -22,7 +22,7 @@ export default class FeederSystem extends System {
                     random(10, CONFIG.HEIGHT - 10)
                 )
             }
-      
+
         });
 
 

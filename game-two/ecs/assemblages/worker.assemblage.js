@@ -4,10 +4,10 @@ import Age from "../components/age.component.js";
 import Angle from "../components/angle.component.js";
 import Ant from "../components/ant.component.js";
 import Cargo from "../components/cargo.component.js";
+import { Collisions } from "../components/collisions.component.js";
 import Colour from "../components/colour.component.js";
 import Energy from "../components/energy.component.js";
 import Intent from "../components/intent.component.js";
-import Queen from "../components/queen.component.js";
 import Sprite from "../components/sprite.component.js";
 import TargetState from "../components/targetState.component.js";
 import Transform from "../components/transform.component.js";
@@ -22,6 +22,7 @@ export default class WorkerTemplate {
             .addComponent(Colour, Colour.create(hue))
             .addComponent(Ant)
             .addComponent(Velocity)
+            .addComponent(Collisions)
             .addComponent(Intent, Intent.create(Intent.EXPLORE))
             .addComponent(Energy)
             .addComponent(Cargo)
