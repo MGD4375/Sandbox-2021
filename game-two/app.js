@@ -93,7 +93,7 @@ function setup() {
 
   }
 
-  for (let foo = 0; foo < 500; foo++) {
+  for (let foo = 0; foo < 100; foo++) {
     FoodTemplate.create(world,
       random(10, CONFIG.WIDTH - 10),
       random(10, CONFIG.HEIGHT - 10)
