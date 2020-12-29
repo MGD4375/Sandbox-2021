@@ -50,6 +50,13 @@ export default class QueenSystem extends System {
                     colour.hue + random(-60, 60),
                     entity.id
                 )
+
+                EggTemplate.create(this.world,
+                    target.x,
+                    target.y,
+                    colour.hue + random(-60, 60),
+                    entity.id
+                )
             }
 
             if (age.value < 300) {

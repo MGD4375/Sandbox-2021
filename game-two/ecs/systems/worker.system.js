@@ -47,10 +47,11 @@ export default class WorkerSystem extends System {
                 }
 
             } else if (cargo.value && (!targetState.ref || !targetState.ref.alive)) {
-                const queen = this.queries.queens.results.filter(function (it) {
+                const queens = this.queries.queens.results.filter(function (it) {
                     const diff = it.getComponent(Colour).difference(colour)
                     return diff < 0.2 && transform.distanceTo(it.getComponent(Transform)) < 300
-                }).reverse()[0]
+                })
+                const queen = queens.length > 1 ? queens[random(0, queens.length - 1)] : null
 
                 if (!!queen) {
                     targetState.ref = queen

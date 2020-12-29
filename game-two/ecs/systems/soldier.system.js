@@ -67,7 +67,7 @@ export default class SoldierSystem extends System {
 
                 }
 
-                velocity.value = 0.7
+                velocity.value = 1
 
             }
 
