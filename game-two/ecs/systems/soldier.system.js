@@ -76,8 +76,8 @@ export default class SoldierSystem extends System {
             collisions.value
                 .filter(it => it.alive && it.getComponent(Colour).difference(colour) > 0.3)
                 .forEach(it => {
-                    it.remove()
                     if (it.getComponent(Soldier)) { entity.remove() }
+                    it.remove()
                 })
 
             //  Bounds

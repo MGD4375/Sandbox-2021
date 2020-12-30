@@ -6,7 +6,7 @@ export default class DeathSystem extends System {
     execute() {
         this.queries.subjects.results.forEach(entity => {
             var age = entity.getComponent(Age)
-            if (age.value > 3000) {
+            if (age.value > age.max) {
                 entity.remove()
             }
         });

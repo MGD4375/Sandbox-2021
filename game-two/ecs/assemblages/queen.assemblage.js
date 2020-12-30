@@ -22,7 +22,7 @@ export default class QueenTemplate {
             .addComponent(Velocity)
             .addComponent(Intent)
             .addComponent(Ant)
-            .addComponent(Age)
+            .addComponent(Age, Age.create(0, 10000))
             .addComponent(Angle, Angle.create(random(0, 3)))
             .addComponent(Energy, Energy.create(30))
             .addComponent(Sprite, Sprite.create('resources/sprites/ant-walk.json', 'ant-walk', 1))

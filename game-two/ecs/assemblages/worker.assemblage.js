@@ -27,7 +27,7 @@ export default class WorkerTemplate {
             .addComponent(Energy)
             .addComponent(Cargo)
             .addComponent(TargetState)
-            .addComponent(Age)
+            .addComponent(Age, Age.create(0, 3000))
             .addComponent(Angle, Angle.create(random(0, 100)))
             .addComponent(Sprite, Sprite.create('resources/sprites/ant-walk.json', 'ant-walk', 0.5))
 
