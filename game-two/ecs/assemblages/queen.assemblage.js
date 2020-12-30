@@ -14,7 +14,7 @@ import Velocity from "../components/velocity.component.js";
 
 export default class QueenTemplate {
     static create(world, x, y, hue) {
-        world.createEntity()
+        return world.createEntity()
             .addComponent(Queen)
             .addComponent(Transform, Transform.create(x, y))
             .addComponent(Colour, Colour.create(hue))
@@ -23,8 +23,8 @@ export default class QueenTemplate {
             .addComponent(Intent)
             .addComponent(Ant)
             .addComponent(Age, Age.create(0, 10000))
-            .addComponent(Angle, Angle.create(random(0, 3)))
-            .addComponent(Energy, Energy.create(30))
+            .addComponent(Angle, Angle.create(random(0, Angle.WHOLE * 100)))
+            .addComponent(Energy, Energy.create(0))
             .addComponent(Sprite, Sprite.create('resources/sprites/ant-walk.json', 'ant-walk', 1))
 
     }

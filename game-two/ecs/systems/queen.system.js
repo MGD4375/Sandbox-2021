@@ -1,9 +1,5 @@
 import { System } from "../../node_modules/ecsy/build/ecsy.module.js";
-import { Not } from "../../node_modules/ecsy/src/index.js";
 import Transform from "../components/transform.component.js";
-import Sprite from "../components/sprite.component.js";
-import SpriteState from "../components/sprite.state.js";
-import pixiApp from "../singletons/pixi.js";
 import Velocity from "../components/velocity.component.js";
 import CONFIG from "../../app.config.js";
 import Queen from "../components/queen.component.js";
@@ -32,6 +28,7 @@ export default class QueenSystem extends System {
             var velocity = entity.getMutableComponent(Velocity)
             var energy = entity.getMutableComponent(Energy)
 
+
             if (intent.value === Intent.EXPLORE) {
                 angle.value = angle.add(random(-1, 1) / 10)
                 velocity.value = .5
@@ -51,6 +48,9 @@ export default class QueenSystem extends System {
                     entity.id
                 )
 
+
+            } else if (intent.value === Intent.SETTLE) {
+                velocity.value = 0
 
             }
 

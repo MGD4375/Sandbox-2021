@@ -84,16 +84,35 @@ function setup() {
 
   FeederTemplate.create(world)
 
-  for (let i = 0; i < 20; i++) {
-    QueenTemplate.create(world,
-      random(0, appConfig.WIDTH),
-      random(0, appConfig.HEIGHT),
-      random(0, 360)
+  for (let i = 0; i < 1; i++) {
+    // const queen = QueenTemplate.create(world,
+    //   random(0, appConfig.WIDTH),
+    //   random(0, appConfig.HEIGHT),
+    //   random(0, 360)
+    // )
+
+    const queen = QueenTemplate.create(world,
+      appConfig.WIDTH / 2,
+      appConfig.HEIGHT / 2,
+      0
     )
 
-  }
+    queen.getMutableComponent(Energy).value = 3000
+    queen.getMutableComponent(Age).value = 300
 
-  for (let foo = 0; foo < 100; foo++) {
+  }
+  var foo;
+
+  if (Colour.difference(180, 0) !== 180 / 180) throw new Error('unexpected value')
+
+  foo = Colour.difference(360, 10)
+  if (foo !== 10 / 180) throw new Error('unexpected value', foo)
+
+  foo = Colour.difference(10, 360)
+  if (foo !== 10 / 180) throw new Error('unexpected value', foo)
+  if (Colour.difference(180, 180) !== 0) throw new Error('unexpected value')
+
+  for (let foo = 0; foo < 0; foo++) {
     FoodTemplate.create(world,
       random(10, CONFIG.WIDTH - 10),
       random(10, CONFIG.HEIGHT - 10)

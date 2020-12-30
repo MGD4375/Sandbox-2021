@@ -1,6 +1,6 @@
 const CONFIG = {
-    WIDTH: 480 * 2,
-    HEIGHT: 270 * 2,
+    WIDTH: 480 * 3,
+    HEIGHT: 270 * 3,
 }
 var downscaling = 10
 var offScreenCanvas = null;

@@ -14,6 +14,7 @@ import Ant from "../components/ant.component.js";
 import ParentState from "../components/parent.component.js";
 import Age from "../components/age.component.js";
 import { CollisionsState } from "../components/collisions.component.js";
+import Egg from "../components/egg.component.js";
 
 export default class SoldierSystem extends System {
 
@@ -31,7 +32,7 @@ export default class SoldierSystem extends System {
             var angle = entity.getMutableComponent(Angle)
             var intent = entity.getMutableComponent(Intent)
             var transform = entity.getComponent(Transform)
-            var colour = entity.getComponent(Colour)
+            var colour = entity.getMutableComponent(Colour)
             var age = entity.getComponent(Age)
             var velocity = entity.getMutableComponent(Velocity)
             var parentState = entity.getMutableComponent(ParentState)
@@ -42,6 +43,10 @@ export default class SoldierSystem extends System {
                     .sort((a, b) => {
                         return a.getComponent(Transform).distanceTo(transform) - b.getComponent(Transform).distanceTo(transform)
                     })[0]
+
+                if (parentState.ref && parentState.ref.alive) {
+                    colour.hue = parentState.ref.getComponent(Colour).hue
+                }
             }
 
             if (!parentState.ref || !parentState.ref.alive) {
@@ -74,7 +79,7 @@ export default class SoldierSystem extends System {
 
             const collisions = entity.getComponent(CollisionsState);
             collisions.value
-                .filter(it => it.alive && it.getComponent(Colour).difference(colour) > 0.3)
+                .filter(it => it.alive && (it.getComponent(Ant) || it.getComponent(Egg)) && it.getComponent(Colour).difference(colour) > 0.4)
                 .forEach(it => {
                     if (it.getComponent(Soldier)) { entity.remove() }
                     it.remove()

@@ -40,16 +40,18 @@ export default class WorkerSystem extends System {
                 angle.value = angle.add(random(-1, 1) / 10)
                 velocity.value = 0.5
 
-                if (cargo.value > 0) {
-                } else if (age.value % 10 === 0) {
-                    targetState.ref = this.queries.food.results.find((fEntity) => { return transform.distanceTo(fEntity.getComponent(Transform)) < 100 })
-                    if (targetState.ref) { intent.value = Intent.GOTO }
-                }
+            }
 
-            } else if (cargo.value && (!targetState.ref || !targetState.ref.alive)) {
+            if (intent.value === Intent.EXPLORE && cargo.value === null) {
+                targetState.ref = this.queries.food.results.find((fEntity) => { return transform.distanceTo(fEntity.getComponent(Transform)) < 100 })
+                if (targetState.ref) { intent.value = Intent.GOTO }
+
+            }
+
+            if (intent.value === Intent.EXPLORE && cargo.value > 0) {
                 const queens = this.queries.queens.results.filter(function (it) {
                     const diff = it.getComponent(Colour).difference(colour)
-                    return diff < 0.2 && transform.distanceTo(it.getComponent(Transform)) < 300
+                    return diff < 0.6 && transform.distanceTo(it.getComponent(Transform)) < 300
                 })
                 const queen = queens.length > 1 ? queens[random(0, queens.length - 1)] : null
 
@@ -57,17 +59,17 @@ export default class WorkerSystem extends System {
                     targetState.ref = queen
                     intent.value = Intent.GOTO
 
-                } else {
-                    intent.value = Intent.EXPLORE
-                    velocity.value = 0.5
-
                 }
             }
 
-            else if (intent.value === Intent.GOTO && (!targetState.ref || !targetState.ref.alive)) {
-                intent.value = Intent.EXPLORE
 
-            } if (intent.value === Intent.GOTO && targetState.ref && targetState.ref.alive) {
+            if (intent.value === Intent.GOTO && (!targetState.ref || !targetState.ref.alive)) {
+                intent.value = Intent.EXPLORE
+                targetState.ref = null
+
+            }
+
+            if (intent.value === Intent.GOTO && targetState.ref && targetState.ref.alive) {
                 const otherTransform = targetState.ref.getComponent(Transform)
                 var dx = otherTransform.x - transform.x;
                 var dy = otherTransform.y - transform.y;
@@ -84,6 +86,7 @@ export default class WorkerSystem extends System {
                     if (cont) {
                         cargo.value = 10
                         targetState.ref.remove()
+                        targetState.ref = null
                     }
 
                 } catch (ex) {
@@ -92,7 +95,8 @@ export default class WorkerSystem extends System {
 
                 }
             }
-            else if (intent.value === Intent.GOTO && targetState.ref && targetState.ref.alive && targetState.ref.getComponent(Queen)) {
+
+            if (intent.value === Intent.GOTO && targetState.ref && targetState.ref.alive && targetState.ref.getComponent(Queen)) {
                 try {
                     const collisions = entity.getComponent(CollisionsState);
                     var cont = collisions.value
@@ -100,8 +104,8 @@ export default class WorkerSystem extends System {
                     if (cont) {
                         var queenEnergy = targetState.ref.getMutableComponent(Energy)
                         queenEnergy.value += cargo.value
-                        cargo.value = 0
                         targetState.ref = null
+                        cargo.value = null
                         intent.value = Intent.EXPLORE
                     }
                 } catch (ex) {

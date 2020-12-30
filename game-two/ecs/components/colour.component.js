@@ -7,7 +7,9 @@ export default class Colour extends Component {
     static create(hue) { return { hue: (hue + 360) % 360 } }
     static GREEN = 120;
     static RED = 0;
-    static difference(aHue, bHue) { return Math.abs(Math.min(aHue - bHue, 360 - (aHue - bHue)) / 180) }
+    static difference(aHue, bHue) {
+        return Math.min(Math.abs(aHue - bHue), Math.abs(360 - Math.abs(aHue - bHue))) / 180
+    }
     toHex() { return hslToHex(this.hue, SATURATION, LIGHT) }
     toRGB() {
         const rgb = hslToRgb(this.hue / 360, SATURATION / 100, LIGHT / 100);
@@ -19,7 +21,11 @@ export default class Colour extends Component {
         const aHue = this.hue
         const bHue = otherColourComponent.hue
 
-        return Colour.difference(aHue, bHue)
+        const diff = Colour.difference(aHue, bHue)
+        if (diff > 1 || diff < 0) {
+            console.warn('Colour difference is outside expected bounds: ', diff)
+        }
+        return diff
 
     }
 }
