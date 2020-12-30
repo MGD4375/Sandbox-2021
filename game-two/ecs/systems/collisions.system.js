@@ -6,6 +6,7 @@ import { Collisions, CollisionsState } from "../components/collisions.component.
 import CONFIG from "../../app.config.js";
 import Quadtree from "../../quadtree.js";
 import Food from "../components/food.component.js";
+import Egg from "../components/egg.component.js";
 
 export default class CollisionsSystem extends System {
 
@@ -44,6 +45,8 @@ export default class CollisionsSystem extends System {
 
         map.forEach((aTransformEntity) => {
             if (aTransformEntity.entity.getComponent(Food)) return
+            if (aTransformEntity.entity.getComponent(Egg)) return
+
             const aSpriteComponent = aTransformEntity.entity.getComponent(SpriteState)
             const aCollisionsState = aTransformEntity.entity.getMutableComponent(CollisionsState)
             aCollisionsState.value = []

@@ -2,10 +2,11 @@ const CONFIG = {
     WIDTH: 480 * 2,
     HEIGHT: 270 * 2,
 }
+var downscaling = 10
 var offScreenCanvas = null;
 var context = null
 const imageData = new ImageData(CONFIG.WIDTH, CONFIG.HEIGHT)
-
+var timing = []
 
 onmessage = function (e) {
     if (e.data.canvas) {    //  OffScreenCanvas Transferred
@@ -14,6 +15,7 @@ onmessage = function (e) {
         return
     }
 
+    const t0 = performance.now();
     const queenData = e.data
 
     var w = offScreenCanvas.width, h = offScreenCanvas.height;
@@ -23,6 +25,7 @@ onmessage = function (e) {
     var Y = []
     var C = []
     var n = queenData.length / 5;
+
 
     context.fillStyle = "white";
     context.fillRect(0, 0, w, h);
@@ -39,19 +42,37 @@ onmessage = function (e) {
         )
     }
 
-    for (y = 0; y < h1; y++) {
-        for (x = 0; x < w1; x++) {
+    for (y = 0; y < h1; y += downscaling) {
+        for (x = 0; x < w1; x += downscaling) {
             dm = Metric(h1, w1, mt); j = -1;
             for (var i = 0; i < n; i++) {
                 d = Metric(X[i] - x, Y[i] - y, mt)
                 if (d < dm) { dm = d; j = i; }
             }
-            setPixel(imageData, x, y, C[j].r, C[j].g, C[j].b, 255)
+
+            for (let xIndex = 0; xIndex < downscaling; xIndex++) {
+                for (let yIndex = 0; yIndex < downscaling; yIndex++) {
+                    setPixel(imageData, x + xIndex, y + yIndex, C[j].r, C[j].g, C[j].b, 255)
+                }
+            }
+
         }
     }
 
     context.putImageData(imageData, 0, 0)
 
+    const t1 = performance.now();
+
+    timing.push(t1 - t0)
+    if (timing.length > 1200) { timing.shift() }
+    const avg = (timing.reduce((a, b) => a + b, 0) / timing.length) || 0;
+    if (avg > 120) {
+        timing = timing.slice(Math.floor(timing.length / 2))
+        downscaling++
+    } else if (avg < 60) {
+        timing = timing.slice(Math.floor(timing.length / 2))
+        downscaling = Math.max(downscaling - 1, 1)
+    }
     postMessage('return');
 }
 
