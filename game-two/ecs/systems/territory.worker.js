@@ -1,6 +1,6 @@
 const CONFIG = {
-    WIDTH: 480 * 4,
-    HEIGHT: 270 * 4,
+    WIDTH: 480 * 2,
+    HEIGHT: 270 * 2,
 }
 var offScreenCanvas = null;
 var context = null
@@ -14,7 +14,7 @@ onmessage = function (e) {
         return
     }
 
-    const queens = e.data
+    const queenData = e.data
 
     var w = offScreenCanvas.width, h = offScreenCanvas.height;
     var x = 0; var y = 0; var d = 0; var dm = 0; var j = 0; var w1 = w - 2, h1 = h - 2;
@@ -22,16 +22,22 @@ onmessage = function (e) {
     var X = []
     var Y = []
     var C = []
-    var n = queens.length;
+    var n = queenData.length / 5;
 
     context.fillStyle = "white";
     context.fillRect(0, 0, w, h);
-    queens.forEach(queen => {
-        X.push(queen.x)
-        Y.push(queen.y)
-        C.push(queen.c)
-    });
 
+    for (let index = 0; index < queenData.length; index += 5) {
+        X.push(queenData[(index) + 0])      //  x
+        Y.push(queenData[(index) + 1])      //  y
+        C.push(
+            {
+                r: queenData[(index) + 2],  //  r
+                g: queenData[(index) + 3],  //  g
+                b: queenData[(index) + 4]   //  b
+            }
+        )
+    }
 
     for (y = 0; y < h1; y++) {
         for (x = 0; x < w1; x++) {
@@ -45,11 +51,6 @@ onmessage = function (e) {
     }
 
     context.putImageData(imageData, 0, 0)
-
-    context.fillStyle = "black";
-    for (var i = 0; i < n; i++) {
-        context.fillRect(X[i], Y[i], 3, 3);
-    }
 
     postMessage('return');
 }

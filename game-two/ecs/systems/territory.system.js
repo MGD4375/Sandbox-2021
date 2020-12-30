@@ -45,7 +45,7 @@ export default class TerritorySystem extends System {
     }
 
     execute() {
-        const queens = this.queries.queens.results // .filter(it => it.getComponent(Velocity).value === 0)
+        const queens = this.queries.queens.results
 
         if (queens.length === 0 || this.updating) {
             return
@@ -56,16 +56,18 @@ export default class TerritorySystem extends System {
 
         this.queenCount = queens.length
 
-        const map = queens.map(it => {
+        const map = new Int32Array(this.queenCount * 5)
+        queens.forEach((it, index) => {
             const transform = it.getComponent(Transform)
-            const colour = it.getComponent(Colour)
-            return {
-                x: transform.x,
-                y: transform.y,
-                c: colour.toRGB()
-            }
-        })
-        this.worker.postMessage(map);
+            const rgb = it.getComponent(Colour).toRGB()
+            map[(index * 5) + 0] = transform.x;
+            map[(index * 5) + 1] = transform.y;
+            map[(index * 5) + 2] = rgb.r;
+            map[(index * 5) + 3] = rgb.g;
+            map[(index * 5) + 4] = rgb.b;
+        });
+
+        this.worker.postMessage(map, Int32Array);
     }
 }
 
