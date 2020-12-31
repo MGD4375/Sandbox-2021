@@ -84,18 +84,18 @@ function setup() {
 
   FeederTemplate.create(world)
 
-  for (let i = 0; i < 1; i++) {
-    // const queen = QueenTemplate.create(world,
-    //   random(0, appConfig.WIDTH),
-    //   random(0, appConfig.HEIGHT),
-    //   random(0, 360)
-    // )
-
+  for (let i = 0; i < 20; i++) {
     const queen = QueenTemplate.create(world,
-      appConfig.WIDTH / 2,
-      appConfig.HEIGHT / 2,
-      0
+      random(0, appConfig.WIDTH),
+      random(0, appConfig.HEIGHT),
+      random(0, 360)
     )
+
+    // const queen = QueenTemplate.create(world,
+    //   appConfig.WIDTH / 2,
+    //   appConfig.HEIGHT / 2,
+    //   0
+    // )
 
     queen.getMutableComponent(Energy).value = 3000
     queen.getMutableComponent(Age).value = 300
