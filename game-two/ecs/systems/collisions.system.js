@@ -2,7 +2,7 @@ import { System } from "../../node_modules/ecsy/build/ecsy.module.js";
 import { Not } from "../../node_modules/ecsy/src/index.js";
 import Transform from "../components/transform.component.js";
 import SpriteState from "../components/sprite.state.js";
-import { Collisions, CollisionsState } from "../components/collisions.component.js";
+import { Collisions, CollisionsActor, CollisionsState } from "../components/collisions.component.js";
 import CONFIG from "../../app.config.js";
 import Quadtree from "../../quadtree.js";
 import Food from "../components/food.component.js";
@@ -44,8 +44,7 @@ export default class CollisionsSystem extends System {
         })
 
         map.forEach((aTransformEntity) => {
-            if (aTransformEntity.entity.getComponent(Food)) return
-            if (aTransformEntity.entity.getComponent(Egg)) return
+            if (!aTransformEntity.entity.getComponent(CollisionsActor)) { return }
 
             const aSpriteComponent = aTransformEntity.entity.getComponent(SpriteState)
             const aCollisionsState = aTransformEntity.entity.getMutableComponent(CollisionsState)

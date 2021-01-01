@@ -37,7 +37,7 @@ import CONFIG from "./app.config.js";
 import Ant from "./ecs/components/ant.component.js";
 import ParentState from "./ecs/components/parent.component.js";
 import TerritorySystem from "./ecs/systems/territory.system.js";
-import { Collisions, CollisionsState } from "./ecs/components/collisions.component.js";
+import { Collisions, CollisionsActor, CollisionsState } from "./ecs/components/collisions.component.js";
 import CollisionsSystem from "./ecs/systems/collisions.system.js";
 
 const world = new World()
@@ -59,6 +59,7 @@ const world = new World()
   .registerComponent(Cargo)
   .registerComponent(Collisions)
   .registerComponent(CollisionsState)
+  .registerComponent(CollisionsActor)
   .registerComponent(SpriteState)
   .registerComponent(Transform)
   .registerComponent(Velocity)

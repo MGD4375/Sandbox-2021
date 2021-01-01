@@ -14,7 +14,7 @@ import Cargo from "../components/cargo.component.js";
 import TargetState from "../components/targetState.component.js";
 import Energy from "../components/energy.component.js";
 import Age from "../components/age.component.js";
-import { CollisionsState } from "../components/collisions.component.js";
+import { CollisionsActor, CollisionsState } from "../components/collisions.component.js";
 
 export default class WorkerSystem extends System {
 
@@ -115,6 +115,11 @@ export default class WorkerSystem extends System {
                 }
             }
 
+            if (intent.value === Intent.GOTO && targetState.ref && !entity.getComponent(CollisionsActor)) {
+                entity.addComponent(CollisionsActor)
+            } else if (entity.getComponent(CollisionsActor)) {
+                entity.removeComponent(CollisionsActor)
+            }
 
             //  Bounds
             if (transform.x < 0 || transform.x > CONFIG.WIDTH || transform.y < 0 || transform.y > CONFIG.HEIGHT) {
