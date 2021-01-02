@@ -1,10 +1,10 @@
 import { System } from "../../node_modules/ecsy/build/ecsy.module.js";
 import { Not } from "../../node_modules/ecsy/src/index.js";
 import Transform from "../components/transform.component.js";
-import { Collisions, CollisionsActor, CollisionsState } from "../components/collisions.component.js";
+import { Collisions, CollisionsState } from "../components/collisions.component.js";
 import CONFIG from "../../app.config.js";
 import Quadtree from "../../quadtree.js";
-import { ColliderState } from "../components/collider.component.js";
+import { Collider, ColliderState } from "../components/collider.component.js";
 
 export default class CollisionsSystem extends System {
 
@@ -42,7 +42,7 @@ export default class CollisionsSystem extends System {
         })
 
         map.forEach((aTransformEntity) => {
-            if (!aTransformEntity.entity.getComponent(CollisionsActor)) { return }
+            if (!aTransformEntity.entity.getComponent(Collisions)) { return }
 
             const aCollider = aTransformEntity.entity.getComponent(ColliderState)
             const aCollisions = aTransformEntity.entity.getMutableComponent(CollisionsState)
@@ -58,12 +58,13 @@ export default class CollisionsSystem extends System {
                     aCollisions.value.push(bTransformEntity.entity)
                 }
             })
+
         });
     }
 }
 
 CollisionsSystem.queries = {
-    creates: { components: [Collisions, Not(CollisionsState), ColliderState, Transform] },
-    updates: { components: [Collisions, CollisionsState, ColliderState, Transform] },
-    deletes: { components: [Not(Collisions), CollisionsState] }
+    creates: { components: [Collider, Not(CollisionsState), ColliderState, Transform] },
+    updates: { components: [Collider, CollisionsState, ColliderState, Transform] },
+    deletes: { components: [Not(Collider), CollisionsState] }
 };

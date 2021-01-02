@@ -14,15 +14,19 @@ import PlayerAttackSystem from "./ecs/systems/playerAttack.system.js";
 import PlayerMovementSystem from "./ecs/systems/playerMovement.system.js";
 import LifeSpanSystem from "./ecs/systems/lifespan.system.js";
 import CollisionsSystem from "./ecs/systems/collisions.system.js";
-import { Collisions, CollisionsActor, CollisionsState } from "./ecs/components/collisions.component.js";
+import { Collisions, CollisionsState } from "./ecs/components/collisions.component.js";
 import Attack from "./ecs/components/attack.component.js";
 import AttackSystem from "./ecs/systems/attack.system.js";
 import Enemy from "./ecs/components/enemy.component.js";
 import Knockback from "./ecs/components/knockback.component.js";
 import CameraFocusComponent from "./ecs/components/cameraFocus.component.js";
 import CameraSystem from "./ecs/systems/camera.system.js";
+import Health from "./ecs/components/health.component.js";
+import Blocker from "./ecs/components/blocker.component.js";
 
 const world = new World()
+  .registerComponent(Blocker)
+  .registerComponent(Health)
   .registerComponent(Knockback)
   .registerComponent(CameraFocusComponent)
   .registerComponent(Enemy)
@@ -34,20 +38,20 @@ const world = new World()
   .registerComponent(Velocity)
 
   //  Collisions
+
   .registerComponent(Collider)
-  .registerComponent(CollisionsActor)
   .registerComponent(ColliderState)
   .registerComponent(Collisions)
   .registerComponent(CollisionsState)
-
+  
   .registerSystem(InputSystem)
   .registerSystem(PlayerMovementSystem)
   .registerSystem(PlayerAttackSystem)
-  .registerSystem(MotionSystem)
   .registerSystem(CollisionsSystem)
+  .registerSystem(MotionSystem)
   .registerSystem(AttackSystem)
-  .registerSystem(DebugSystem)
   .registerSystem(LifeSpanSystem)
+  .registerSystem(DebugSystem)
   .registerSystem(CameraSystem)
 
 
@@ -59,7 +63,6 @@ function setup() {
   //  Create Hero
   world.createEntity()
     .addComponent(CameraFocusComponent)
-    .addComponent(CollisionsActor)
     .addComponent(Collisions)
     .addComponent(Collider, Collider.create(48, 72))
     .addComponent(Transform, Transform.create(CONFIG.WIDTH / 2, CONFIG.HEIGHT / 2))
@@ -71,12 +74,27 @@ function setup() {
   //  Create enemies
   world.createEntity()
     .addComponent(Enemy)
-    .addComponent(CollisionsActor)
     .addComponent(Collisions)
     .addComponent(Collider, Collider.create(48, 72))
     .addComponent(Transform, Transform.create(CONFIG.WIDTH / 1.5, CONFIG.HEIGHT / 2))
     .addComponent(Velocity)
     .addComponent(Angle)
+
+
+  for (let x = 0; x < CONFIG.WIDTH; x += 120) {
+    for (let y = 0; y < CONFIG.HEIGHT; y += 120) {
+
+      if (x === 0 || y === 0 || x === (10 * 120) || y === (6 * 120)) {
+        world.createEntity()
+          .addComponent(Blocker)
+          .addComponent(Collider, Collider.create(120, 120))
+          .addComponent(Transform, Transform.create(x, y))
+      }
+
+
+
+    }
+  }
 
 
   pixiApp.ticker.add(delta => gameLoop(delta))

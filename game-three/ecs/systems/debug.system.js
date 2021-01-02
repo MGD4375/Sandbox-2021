@@ -26,6 +26,14 @@ export default class DebugSystem extends System {
                 collider.height
             );
 
+            graphics.beginFill(0x000000);
+            graphics.drawRect(
+                0,
+                0,
+                3,
+                3
+            );
+
             graphics.name = entity.id + '-hitbox'
             graphics.x = transform.x
             graphics.y = transform.y

@@ -2,7 +2,7 @@ import { System } from "../../node_modules/ecsy/build/ecsy.module.js";
 import Angle from "../components/angle.component.js";
 import Attack from "../components/attack.component.js";
 import { Collider } from "../components/collider.component.js";
-import { Collisions, CollisionsActor } from "../components/collisions.component.js";
+import { Collisions } from "../components/collisions.component.js";
 import InputComponent from "../components/input.component.js";
 import LifeSpan from "../components/lifespan.component.js";
 import Transform from "../components/transform.component.js";
@@ -50,7 +50,6 @@ export default class PlayerAttackSystem extends System {
                 this.lastUseds[1] = this.tick
                 this.world.createEntity()
                     .addComponent(Attack, Attack.create(10, 60))
-                    .addComponent(CollisionsActor)
                     .addComponent(Collisions)
                     .addComponent(Angle, Angle.create(angle.value))
                     .addComponent(Velocity, Velocity.create(5 + velocity.value))
@@ -64,7 +63,6 @@ export default class PlayerAttackSystem extends System {
                 velocity.value = 0
                 this.world.createEntity()
                     .addComponent(Attack, Attack.create(5, 30))
-                    .addComponent(CollisionsActor)
                     .addComponent(Collisions)
                     .addComponent(Angle, Angle.create(angle.value))
                     .addComponent(Velocity, Velocity.create(6 + velocity.value))
