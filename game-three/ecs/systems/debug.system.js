@@ -46,7 +46,7 @@ export default class DebugSystem extends System {
         this.queries.deletes.results.forEach((entity) => {
             const colliderState = entity.getComponent(ColliderState)
             pixiApp.stage.removeChild(colliderState.ref)
-            entity.removeComponent(Collider)
+            entity.removeComponent(ColliderState)
 
 
         });

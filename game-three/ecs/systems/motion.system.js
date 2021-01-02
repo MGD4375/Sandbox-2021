@@ -37,20 +37,38 @@ export default class MotionSystem extends System {
                 var absDX = Math.abs(dx);
                 var absDY = Math.abs(dy);
 
-                if (dx < 0) {
-                    eTransform.x = bTransform.x + (bCollider.width / 2) + (eCollider.width / 2);
-                }
-                else {
-                    eTransform.x = bTransform.x - (bCollider.width / 2) - (eCollider.width / 2);
-                }
-                // if (dy < 0) {
-                //     eTransform.y = bTransform.y + (bCollider.height / 2) + (eCollider.height / 2) + 1;
-                // }
-                // else {
-                //     eTransform.y = bTransform.y - (bCollider.height / 2) - (eCollider.height / 2) - 1;
-                // }
 
-                velocity.value = 0
+
+                // If the distance between the normalized x and y
+                // position is less than a small threshold (.1 in this case)
+                // then this object is approaching from a corner
+                if (Math.abs(absDX - absDY) < .1) {
+
+                    if (dx < 0) { eTransform.x = bTransform.x + (bCollider.width / 2) + (eCollider.width / 2); }
+                    else { eTransform.x = bTransform.x - (bCollider.width / 2) - (eCollider.width / 2); }
+
+                    if (dy < 0) { eTransform.y = bTransform.y + (bCollider.height / 2) + (eCollider.height / 2); }
+                    else { eTransform.y = bTransform.y - (bCollider.height / 2) - (eCollider.height / 2); }
+
+                    velocity.value = 0
+
+                    // If the object is approaching from the sides
+                } else if (absDX > absDY) {
+
+                    if (dx < 0) { eTransform.x = bTransform.x + (bCollider.width / 2) + (eCollider.width / 2); }
+                    else { eTransform.x = bTransform.x - (bCollider.width / 2) - (eCollider.width / 2); }
+
+                    velocity.value = 0
+
+                    // If this collision is coming from the top or bottom more
+                } else {
+
+                    if (dy < 0) { eTransform.y = bTransform.y + (bCollider.height / 2) + (eCollider.height / 2); }
+                    else { eTransform.y = bTransform.y - (bCollider.height / 2) - (eCollider.height / 2) - 2; } //  No idea why I only need to add to this one
+
+                    velocity.value = 0
+                }
+
 
             } else {
                 eTransform.x = movement.x
