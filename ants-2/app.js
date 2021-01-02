@@ -35,12 +35,17 @@ import Soldier from "./ecs/components/soldier.component.js";
 import FoodTemplate from "./ecs/assemblages/food.assemblage.js";
 import CONFIG from "./app.config.js";
 import Ant from "./ecs/components/ant.component.js";
-import ParentState from "./ecs/components/parent.component.js";
 import TerritorySystem from "./ecs/systems/territory.system.js";
 import { Collisions, CollisionsActor, CollisionsState } from "./ecs/components/collisions.component.js";
 import CollisionsSystem from "./ecs/systems/collisions.system.js";
+import { Sense, SenseColliderState, SensedState } from "./ecs/components/sense.component.js";
+import SenseSystem from "./ecs/systems/sense.system.js";
+import WorkerTemplate from "./ecs/assemblages/worker.assemblage.js";
 
 const world = new World()
+  .registerComponent(Sense)
+  .registerComponent(SenseColliderState)
+  .registerComponent(SensedState)
   .registerComponent(Queen)
   .registerComponent(Worker)
   .registerComponent(Age)
@@ -48,7 +53,6 @@ const world = new World()
   .registerComponent(Intent)
   .registerComponent(Energy)
   .registerComponent(TargetState)
-  .registerComponent(ParentState)
   .registerComponent(Egg)
   .registerComponent(Ant)
   .registerComponent(Drawable)
@@ -67,6 +71,7 @@ const world = new World()
   .registerSystem(SpriteSystem)
   .registerSystem(DrawableSystem)
   .registerSystem(CollisionsSystem)
+  .registerSystem(SenseSystem)
   .registerSystem(QueenSystem)
   .registerSystem(WorkerSystem)
   .registerSystem(FeederSystem)
@@ -85,23 +90,34 @@ function setup() {
 
   FeederTemplate.create(world)
 
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 50; i++) {
+    const height = random(0, appConfig.HEIGHT)
+    const width = random(0, appConfig.WIDTH)
+    const colour = random(0, 360)
     const queen = QueenTemplate.create(world,
-      random(0, appConfig.WIDTH),
-      random(0, appConfig.HEIGHT),
-      random(0, 360)
+      width,
+      height,
+      colour
     )
 
-    // const queen = QueenTemplate.create(world,
-    //   appConfig.WIDTH / 2,
-    //   appConfig.HEIGHT / 2,
-    //   0
-    // )
-
-    queen.getMutableComponent(Energy).value = 3000
     queen.getMutableComponent(Age).value = 300
 
+    WorkerTemplate.create(world,
+      width,
+      height,
+      colour
+    )
+
+    FoodTemplate.create(world,
+      random(0, appConfig.HEIGHT),
+      random(0, appConfig.WIDTH)
+    )
+    FoodTemplate.create(world,
+      random(0, appConfig.HEIGHT),
+      random(0, appConfig.WIDTH)
+    )
   }
+
   var foo;
 
   if (Colour.difference(180, 0) !== 180 / 180) throw new Error('unexpected value')

@@ -5,7 +5,6 @@ import { Collisions } from "../components/collisions.component.js";
 import Colour from "../components/colour.component.js";
 import Drawable from "../components/drawable.component.js";
 import Egg from "../components/egg.component.js";
-import ParentState from "../components/parent.component.js";
 import Transform from "../components/transform.component.js";
 import Velocity from "../components/velocity.component.js";
 

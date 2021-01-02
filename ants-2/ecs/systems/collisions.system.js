@@ -5,8 +5,7 @@ import SpriteState from "../components/sprite.state.js";
 import { Collisions, CollisionsActor, CollisionsState } from "../components/collisions.component.js";
 import CONFIG from "../../app.config.js";
 import Quadtree from "../../quadtree.js";
-import Food from "../components/food.component.js";
-import Egg from "../components/egg.component.js";
+import { Sense, SenseColliderState, SensedState } from "../components/sense.component.js";
 
 export default class CollisionsSystem extends System {
 
@@ -24,6 +23,8 @@ export default class CollisionsSystem extends System {
     execute() {
         this.queries.creates.results.forEach(entity => { entity.addComponent(CollisionsState) });
         this.queries.deletes.results.forEach(entity => { entity.removeComponent(CollisionsState) });
+        this.queries.sensorCreates.results.forEach(entity => { entity.addComponent(SensedState) });
+        this.queries.sensorDeletes.results.forEach(entity => { entity.removeComponent(SensedState) });
 
         this.quadTree.clear();
 
@@ -39,7 +40,24 @@ export default class CollisionsSystem extends System {
             }
         })
 
+        const sensors = this.queries.sensorUpdates.results.map(it => {
+            const transform = it.getComponent(Transform)
+            const spriteState = it.getComponent(SenseColliderState)
+            return {
+                x: transform.x,
+                y: transform.y,
+                width: spriteState.ref.width,
+                height: spriteState.ref.height,
+                entity: it
+            }
+        })
+
+
         map.forEach(it => {
+            this.quadTree.insert(it);
+        })
+
+        sensors.forEach(it => {
             this.quadTree.insert(it);
         })
 
@@ -50,7 +68,7 @@ export default class CollisionsSystem extends System {
             const aCollisionsState = aTransformEntity.entity.getMutableComponent(CollisionsState)
             aCollisionsState.value = []
 
-            var candidates = this.quadTree.retrieve(aTransformEntity);
+            var candidates = this.quadTree.retrieve(aTransformEntity).filter(it => it.entity.getComponent(SpriteState));
 
             candidates.forEach(bTransformEntity => {
                 if (aTransformEntity === bTransformEntity) return
@@ -61,11 +79,34 @@ export default class CollisionsSystem extends System {
                 }
             })
         });
+
+        sensors.forEach((aTransformEntity) => {
+            const aSpriteComponent = aTransformEntity.entity.getComponent(SenseColliderState)
+            const aCollisionsState = aTransformEntity.entity.getMutableComponent(SensedState)
+            aCollisionsState.value = []
+
+            var candidates = this.quadTree.retrieve(aTransformEntity).filter(it => it.entity.getComponent(SpriteState));
+
+            candidates.forEach(bTransformEntity => {
+                if (aTransformEntity === bTransformEntity) return
+
+                const bSpriteComponent = bTransformEntity.entity.getComponent(SpriteState)
+                if (aSpriteComponent.collides(bSpriteComponent.ref)) {
+                    aCollisionsState.value.push(bTransformEntity.entity)
+                }
+
+            })
+        });
     }
 }
 
 CollisionsSystem.queries = {
     creates: { components: [Collisions, Not(CollisionsState), Transform, SpriteState] },
     updates: { components: [Collisions, CollisionsState, Transform, SpriteState] },
-    deletes: { components: [Not(Collisions), CollisionsState] }
+    deletes: { components: [Not(Collisions), CollisionsState] },
+
+    sensorCreates: { components: [SenseColliderState, Not(SensedState), Transform] },
+    sensorUpdates: { components: [SenseColliderState, SensedState, Transform] },
+    sensorDeletes: { components: [Not(SenseColliderState), SensedState] },
+
 };

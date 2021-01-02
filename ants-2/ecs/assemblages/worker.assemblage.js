@@ -12,12 +12,14 @@ import Sprite from "../components/sprite.component.js";
 import TargetState from "../components/targetState.component.js";
 import Transform from "../components/transform.component.js";
 import Velocity from "../components/velocity.component.js";
+import { Sense } from "../components/sense.component.js";
 import Worker from "../components/worker.component.js";
 
 export default class WorkerTemplate {
     static create(world, x, y, hue) {
         world.createEntity()
             .addComponent(Worker)
+            .addComponent(Sense)
             .addComponent(Transform, Transform.create(x, y))
             .addComponent(Colour, Colour.create(hue))
             .addComponent(Ant)
