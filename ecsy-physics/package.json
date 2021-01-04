@@ -1,0 +1,13 @@
+{
+  "name": "ecsy-physics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Morgan",
+  "dependencies": {
+    "ecsy": "^0.4.2",
+    "physicsjs": "^0.7.0",
+    "pixi.js": "^5.3.7",
+    "planck-js": "^0.3.22"
+  }
+}
