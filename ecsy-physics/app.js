@@ -35,7 +35,7 @@ function gameLoop(delta) {
     world.createEntity()
       .addComponent(PhysicsBody, PhysicsBody.create(false))
       .addComponent(Transform, Transform.create(Math.random() * 1400, 50))
-      .addComponent(Collider, Collider.create(10, 10))
+      .addComponent(Collider, Collider.create(40, 40))
   }
 
   world.execute(delta)

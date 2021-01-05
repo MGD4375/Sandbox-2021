@@ -48,7 +48,7 @@ export class PlatformerPhysicsSystem extends System {
                 width: collider.width,
                 height: collider.height,
                 treatment: physicsBody.isStatic ? 'static' : 'dynamic',
-                restitution: 1,
+                restitution: 1.2,
             })
 
             this.physics.add(box)
