@@ -26,7 +26,7 @@ export default class EggSystem extends System {
 
             if (age.value > 1000) {
                 if (num >= 9) QueenTemplate.create(this.world, transform.x, transform.y, colour.hue)
-                else if (num >= 6) SoldierTemplate.create(this.world, transform.x, transform.y, colour.hue)
+                else if (num >= 8) SoldierTemplate.create(this.world, transform.x, transform.y, colour.hue)
                 else WorkerTemplate.create(this.world, transform.x, transform.y, colour.hue)
                 entity.remove()
             }
