@@ -24,8 +24,15 @@ export class ControlSystem extends System {
             body.xAcceleration = input.states.right ? 1 :
                 input.states.left ? -1 : 0
 
-            body.yAcceleration = input.states.down ? 5 :
-                input.states.up ? -5 : 0
+
+            if (body.collisions.length > 0) {
+                body.yAcceleration = input.states.down ? 5 :
+                    input.states.up ? -5 : 0
+
+                    input.states.up = false
+            }
+
+
 
         })
     }

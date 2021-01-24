@@ -1,6 +1,7 @@
 import {
     Component,
     System,
+    SystemStateComponent,
     Types
 } from "../../node_modules/ecsy/build/ecsy.module.js"
 import Quadtree from "../../quadtree.js"
@@ -82,6 +83,10 @@ PhysicsBody.schema = {
         type: Types.Number,
         default: 0
     },
+    collisions: {
+        type: Types.Array,
+        default: []
+    }
 
 
 }
@@ -123,7 +128,7 @@ export class PhysicsSystem extends System {
 
             if (!aBody.static) {
                 //  Gravity
-                aBody.yAcceleration = (aBody.yAcceleration + 1)
+                aBody.yAcceleration = (aBody.yAcceleration + .7)
             }
 
             //  Positional Logic
@@ -298,7 +303,8 @@ function resolveElastic(aBody, bBody) {
 
         // Velocity component
         aBody.yVelocity = -aBody.yVelocity * bBody.restitution;
-        aBody.xVelocity /= 1.2   //  This is supposed to be friction, not sure if it's a good execution though
+        //  Regarding friction: This is a whole topic on it's own which isn't captured properly by /=1.2, but it'll probably be fine for this.
+        aBody.xVelocity /= 1.2 //  This is supposed to be friction, not sure if it's a good execution though
 
         if (Math.abs(aBody.yVelocity) < STICKY_THRESHOLD) {
             aBody.yVelocity = 0;

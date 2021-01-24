@@ -14,7 +14,7 @@ import Platformer from "./game.js";
     game.createEntity()
         .addComponent(InputState)
         .addComponent(KeyboardState)
-        .addComponent(PhysicsBody, PhysicsBody.create(30, 30, 60, 60))
+        .addComponent(PhysicsBody, PhysicsBody.create(30, 30, 60, 90))
 
 
     const staticBody = PhysicsBody.create(0, 600, game.width, 60)
