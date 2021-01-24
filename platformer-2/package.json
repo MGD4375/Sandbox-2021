@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "ecsy": "^0.4.2",
+    "pixi.js": "^5.3.7"
+  }
+}
