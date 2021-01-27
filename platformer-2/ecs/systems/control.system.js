@@ -21,15 +21,17 @@ export class ControlSystem extends System {
             const body = entity.getMutableComponent(PhysicsBody)
             const input = entity.getMutableComponent(InputState)
 
-            body.xAcceleration = input.states.right ? 1 :
-                input.states.left ? -1 : 0
+            body.xAcceleration = input.states.right ? 1.5 :
+                input.states.left ? -1.5 : 0
 
 
-            if (body.collisions.length > 0) {
-                body.yAcceleration = input.states.down ? 5 :
-                    input.states.up ? -5 : 0
 
-                    input.states.up = false
+
+            if (body.collisions.map(it => it.axis).includes('bottom')) {
+                body.yAcceleration = input.states.down ? 4.5 :
+                    input.states.up ? -4.5 : 0
+
+                input.states.up = false
             }
 
 

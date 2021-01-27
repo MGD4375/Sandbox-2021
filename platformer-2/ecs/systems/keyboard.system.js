@@ -29,10 +29,10 @@ export class KeyboardState extends Component {
         this.states = {}
         this.mapping = {
             ' ': 'jump',
-            'ArrowLeft': 'left',
-            'ArrowRight': 'right',
-            'ArrowUp': 'up',
-            'ArrowDown': 'down',
+            'arrowleft': 'left',
+            'arrowright': 'right',
+            'arrowup': 'up',
+            'arrowdown': 'down',
             'a': 'left',
             'd': 'right',
             'w': 'up',
@@ -47,6 +47,7 @@ export class KeyboardState extends Component {
         }
     }
     setKeyState(key, value) {
+        key = key.toLowerCase()
         let state = this.getKeyState(key)
         state.prev = state.current
         state.current = value

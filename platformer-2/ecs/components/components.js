@@ -1,6 +1,7 @@
 import {
     Component,
     SystemStateComponent,
+    TagComponent,
     Types
 } from "../../node_modules/ecsy/build/ecsy.module.js";
 
@@ -29,3 +30,5 @@ ColliderState.schema = {
         type: Types.Ref
     }
 }
+
+export class AIComponent extends TagComponent {}

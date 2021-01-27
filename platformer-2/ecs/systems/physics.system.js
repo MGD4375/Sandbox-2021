@@ -1,15 +1,13 @@
 import {
     Component,
     System,
-    SystemStateComponent,
     Types
 } from "../../node_modules/ecsy/build/ecsy.module.js"
 import Quadtree from "../../quadtree.js"
 import {
     ColliderState
 } from "../components/components.js"
-
-const STICKY_THRESHOLD = 0.004
+import resolveElastic from "./displacement.physics.js"
 
 export class PhysicsBody extends Component {
 
@@ -29,8 +27,6 @@ export class PhysicsBody extends Component {
     getMidY() {
         return (this.height / 2) + this.y;
     }
-    // Getters for the top, left, right, and bottom
-    // of the rectangle
     getTop() {
         return this.y;
     }
@@ -43,8 +39,6 @@ export class PhysicsBody extends Component {
     getBottom() {
         return this.y + this.height;
     }
-
-
 }
 PhysicsBody.schema = {
     x: {
@@ -97,10 +91,12 @@ export class PhysicsSystem extends System {
         this.world = world
 
         //  TODO: This should come from world, but it doesn't work for some reason
-        const width = 480 * 3,
-            height = 270 * 3
+        const width = 480 * 10, //  This should actually not be based on world, but be based on the size of the tilemap.
+            height = 270 * 10 //  Same as above
 
         this.quadTree = new Quadtree({
+            x: 0,
+            y: 0,
             width: width,
             height: height
         })
@@ -120,43 +116,51 @@ export class PhysicsSystem extends System {
             return body
         })
 
-        map.forEach(it => {
-            this.quadTree.insert(it);
-        })
+
 
         map.forEach(aBody => {
 
+            //  Gravity
             if (!aBody.static) {
-                //  Gravity
-                aBody.yAcceleration = (aBody.yAcceleration + .7)
+                aBody.yAcceleration += .7
             }
 
             //  Positional Logic
             //  NEXT STEPS: What's a good terminal velocity?
             //  NEXT STEPS: Should terminal velocity be set on a per item basis?
             aBody.xVelocity = (aBody.xVelocity + aBody.xAcceleration).clamp(-5, 5)
-            aBody.yVelocity = (aBody.yVelocity + aBody.yAcceleration).clamp(-10, 10)
+            aBody.yVelocity = (aBody.yVelocity + aBody.yAcceleration).clamp(-13, 13)
             aBody.x += aBody.xVelocity
             aBody.y += aBody.yVelocity
+        })
 
-            //  Collision Detection
-            //  We use a combination of the pixi sprites collider we set up, and quadtrees. It is almost certainly 
+        map.forEach(it => {
+            this.quadTree.insert(it);
+        })
+
+        //  Collision Detection
+        //  We use a combination of the pixi sprites collider we set up, and quadtrees. It is almost certainly 
+        map.forEach(aBody => {
+            if (aBody.static) return
             aBody.collisions = this.quadTree
                 .retrieve(aBody)
                 .filter(bBody => {
                     if (aBody === bBody) return false
                     if (collides(aBody, bBody)) return true
                 })
-
-
-
+                .map(bBody => {
+                    return {
+                        //  TODO: Remove duplicated collision check
+                        axis: collides(aBody, bBody),
+                        body: bBody
+                    }
+                })
         })
 
         //  Collision Resolution
-        map.forEach(aIndexedEntity => {
-            if (aIndexedEntity.static) return
-            aIndexedEntity.collisions.forEach(bIndexedEntity => {
-                resolveElastic(aIndexedEntity, bIndexedEntity)
+        map.forEach(aBody => {
+            aBody.collisions.forEach(collision => {
+                resolveElastic(aBody, collision.body)
             })
         })
 
@@ -172,143 +176,52 @@ Number.prototype.clamp = function (min, max) {
     return Math.min(Math.max(this, min), max);
 };
 
-function collides(collider, collidee) {
+function collides(aBody, bBody) {
 
     // Store the collider and collidee edges
-    var l1 = collider.getLeft();
-    var t1 = collider.getTop();
-    var r1 = collider.getRight();
-    var b1 = collider.getBottom();
+    const l1 = aBody.getLeft();
+    const t1 = aBody.getTop();
+    const r1 = aBody.getRight();
+    const b1 = aBody.getBottom();
 
-    var l2 = collidee.getLeft();
-    var t2 = collidee.getTop();
-    var r2 = collidee.getRight();
-    var b2 = collidee.getBottom();
+    const l2 = bBody.getLeft();
+    const t2 = bBody.getTop();
+    const r2 = bBody.getRight();
+    const b2 = bBody.getBottom();
 
     // If the any of the edges are beyond any of the
     // others, then we know that the box cannot be
     // colliding
+
     if (b1 < t2 || t1 > b2 || r1 < l2 || l1 > r2) {
         return false;
     }
 
-    // If the algorithm made it here, it had to collide
-    return true;
-};
 
-function resolveElastic(aBody, bBody) {
-    // Find the mid points of the entity and player
-    var pMidX = aBody.getMidX();
-    var pMidY = aBody.getMidY();
-    var aMidX = bBody.getMidX();
-    var aMidY = bBody.getMidY();
+    /// This is inefficient because it's repeated from displacement.physics.js
+    // Find the mid points of the bBody and aBody
+    var aMidX = aBody.getMidX();
+    var aMidY = aBody.getMidY();
+    var bMidX = bBody.getMidX();
+    var bMidY = bBody.getMidY();
 
     // To find the side of entry calculate based on
     // the normalized sides
-    var dx = (aMidX - pMidX) / bBody.halfWidth;
-    var dy = (aMidY - pMidY) / bBody.halfHeight;
+
+    //  N.B The original code here didn't make much sense to me.
+    //  In order to normalize a value we divide it by it's magnitude, for example a length of 5, normalized to 1 would be 5/5.
+    var dx = (bMidX - aMidX) / ((aBody.halfWidth + bBody.halfWidth) / 2);
+    var dy = (bMidY - aMidY) / ((aBody.halfHeight + bBody.halfHeight) / 2);
 
     // Calculate the absolute change in x and y
     var absDX = Math.abs(dx);
     var absDY = Math.abs(dy);
 
-    // If the distance between the normalized x and y
-    // position is less than a small threshold (.1 in this case)
-    // then this object is approaching from a corner
-    if (Math.abs(absDX - absDY) < .1) {
-
-        // If the player is approaching from positive X
-        if (dx < 0) {
-
-            // Set the player x to the right side
-            aBody.x = bBody.getRight();
-
-            // If the player is approaching from negative X
-        } else {
-
-            // Set the player x to the left side
-            aBody.x = bBody.getLeft() - aBody.width;
-        }
-
-        // If the player is approaching from positive Y
-        if (dy < 0) {
-
-            // Set the player y to the bottom
-            aBody.y = bBody.getBottom();
-
-            // If the player is approaching from negative Y
-        } else {
-
-            // Set the player y to the top
-            aBody.y = bBody.getTop() - aBody.height;
-        }
-
-        // Randomly select a x/y direction to reflect velocity on
-        if (Math.random() < .5) {
-
-            // Reflect the velocity at a reduced rate
-            aBody.xVelocity = -aBody.xVelocity * bBody.restitution;
-            aBody.yVelocity /= 1.2
-
-
-            // If the object's velocity is nearing 0, set it to 0
-            // STICKY_THRESHOLD is set to .0004
-            if (Math.abs(aBody.xVelocity) < STICKY_THRESHOLD) {
-                aBody.xVelocity = 0;
-            }
-        } else {
-
-            aBody.yVelocity = -aBody.yVelocity * bBody.restitution;
-            aBody.yAcceleration /= 1.2
-
-            if (Math.abs(aBody.yVelocity) < STICKY_THRESHOLD) {
-                aBody.yVelocity = 0;
-
-            }
-        }
-
-        // If the object is approaching from the sides
-    } else if (absDX > absDY) {
-
-        // If the player is approaching from positive X
-        if (dx < 0) {
-            aBody.x = bBody.getRight();
-
-        } else {
-            // If the player is approaching from negative X
-            aBody.x = bBody.getLeft() - aBody.width;
-        }
-
-        // Velocity component
-        aBody.xVelocity = -aBody.xVelocity * bBody.restitution;
-        aBody.yVelocity /= 1.2
-
-
-        if (Math.abs(aBody.xVelocity) < STICKY_THRESHOLD) {
-            aBody.xVelocity = 0;
-
-        }
-
-        // If this collision is coming from the top or bottom more
+    if (absDX > absDY) {
+        if (dx < 0) return 'left'
+        else return 'right'
     } else {
-
-        // If the player is approaching from positive Y
-        if (dy < 0) {
-            aBody.y = bBody.getBottom();
-
-        } else {
-            // If the player is approaching from negative Y
-            aBody.y = bBody.getTop() - aBody.height;
-        }
-
-        // Velocity component
-        aBody.yVelocity = -aBody.yVelocity * bBody.restitution;
-        //  Regarding friction: This is a whole topic on it's own which isn't captured properly by /=1.2, but it'll probably be fine for this.
-        aBody.xVelocity /= 1.2 //  This is supposed to be friction, not sure if it's a good execution though
-
-        if (Math.abs(aBody.yVelocity) < STICKY_THRESHOLD) {
-            aBody.yVelocity = 0;
-
-        }
+        if (dy < 0) return 'top'
+        else return 'bottom'
     }
 };

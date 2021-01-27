@@ -1,6 +1,14 @@
 import {
+    AIComponent,
     ColliderState
 } from "./ecs/components/components.js";
+import {
+    AISystem
+} from "./ecs/systems/ai.system.js";
+import {
+    CameraFocus,
+    CameraSystem
+} from "./ecs/systems/camera.system.js";
 import {
     ColliderSystem
 } from "./ecs/systems/collider.system.js";
@@ -25,14 +33,18 @@ export default class Platformer extends World {
         return new Promise((resolve) => {
 
             const game = new Platformer()
+                .registerComponent(CameraFocus)
                 .registerComponent(PhysicsBody)
                 .registerComponent(ColliderState)
+                .registerComponent(AIComponent)
                 .registerComponent(InputState)
                 .registerComponent(KeyboardState)
                 .registerSystem(ControlSystem)
                 .registerSystem(KeyboardSystem)
+                .registerSystem(AISystem)
                 .registerSystem(PhysicsSystem)
                 .registerSystem(ColliderSystem)
+                .registerSystem(CameraSystem)
 
             game.height = height
             game.width = width

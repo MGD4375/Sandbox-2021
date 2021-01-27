@@ -1,4 +1,37 @@
 /**
+ * quadtree-js
+ * @version 1.2.3
+ * @license MIT
+ * @author Timo Hausmann
+ */
+
+/* https://github.com/timohausmann/quadtree-js.git v1.2.3 */
+
+/*
+Copyright © 2012-2020 Timo Hausmann
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+
+/**
  * Quadtree Constructor
  * @param Object bounds            bounds of the node { x, y, width, height }
  * @param Integer max_objects      (optional) max objects a node can hold before splitting into 4 subnodes (default: 10)
@@ -17,9 +50,6 @@ export default class Quadtree {
         this.objects = [];
         this.nodes = [];
     }
-    /**
-     * Split the node into 4 subnodes
-     */
     split() {
 
         var nextLevel = this.level + 1,
@@ -28,7 +58,6 @@ export default class Quadtree {
             x = this.bounds.x,
             y = this.bounds.y;
 
-        //top right node
         this.nodes[0] = new Quadtree({
             x: x + subWidth,
             y: y,
@@ -36,7 +65,6 @@ export default class Quadtree {
             height: subHeight
         }, this.max_objects, this.max_levels, nextLevel);
 
-        //top left node
         this.nodes[1] = new Quadtree({
             x: x,
             y: y,
@@ -44,7 +72,6 @@ export default class Quadtree {
             height: subHeight
         }, this.max_objects, this.max_levels, nextLevel);
 
-        //bottom left node
         this.nodes[2] = new Quadtree({
             x: x,
             y: y + subHeight,
@@ -52,7 +79,6 @@ export default class Quadtree {
             height: subHeight
         }, this.max_objects, this.max_levels, nextLevel);
 
-        //bottom right node
         this.nodes[3] = new Quadtree({
             x: x + subWidth,
             y: y + subHeight,
@@ -77,22 +103,18 @@ export default class Quadtree {
             endIsEast = pRect.x + pRect.width > verticalMidpoint,
             endIsSouth = pRect.y + pRect.height > horizontalMidpoint;
 
-        //top-right quad
         if (startIsNorth && endIsEast) {
             indexes.push(0);
         }
 
-        //top-left quad
         if (startIsWest && startIsNorth) {
             indexes.push(1);
         }
 
-        //bottom-left quad
         if (startIsWest && endIsSouth) {
             indexes.push(2);
         }
 
-        //bottom-right quad
         if (endIsEast && endIsSouth) {
             indexes.push(3);
         }
@@ -110,7 +132,6 @@ export default class Quadtree {
         var i = 0,
             indexes;
 
-        //if we have subnodes, call insert on matching subnodes
         if (this.nodes.length) {
             indexes = this.getIndex(pRect);
 
@@ -120,18 +141,14 @@ export default class Quadtree {
             return;
         }
 
-        //otherwise, store object here
         this.objects.push(pRect);
 
-        //max_objects reached
         if (this.objects.length > this.max_objects && this.level < this.max_levels) {
 
-            //split if we don't already have subnodes
             if (!this.nodes.length) {
                 this.split();
             }
 
-            //add all objects to their corresponding subnode
             for (i = 0; i < this.objects.length; i++) {
                 indexes = this.getIndex(this.objects[i]);
                 for (var k = 0; k < indexes.length; k++) {
@@ -139,7 +156,6 @@ export default class Quadtree {
                 }
             }
 
-            //clean up this node
             this.objects = [];
         }
     }
@@ -153,14 +169,12 @@ export default class Quadtree {
         var indexes = this.getIndex(pRect),
             returnObjects = this.objects;
 
-        //if we have subnodes, retrieve their objects
         if (this.nodes.length) {
             for (var i = 0; i < indexes.length; i++) {
                 returnObjects = returnObjects.concat(this.nodes[indexes[i]].retrieve(pRect));
             }
         }
 
-        //remove duplicates
         returnObjects = returnObjects.filter(function (item, index) {
             return returnObjects.indexOf(item) >= index;
         });
