@@ -1,10 +1,20 @@
 import {
+    Age,
     AIComponent,
-    ColliderState
+    Attack,
+    ColliderState,
+    Enemy,
+    Facing,
+    Health,
+    MovementSpeed,
+    Parent
 } from "./ecs/components/components.js";
 import {
     AISystem
 } from "./ecs/systems/ai.system.js";
+import {
+    AttackSystem
+} from "./ecs/systems/attack.system.js";
 import {
     CameraFocus,
     CameraSystem
@@ -33,8 +43,15 @@ export default class Platformer extends World {
         return new Promise((resolve) => {
 
             const game = new Platformer()
+                .registerComponent(Enemy)
+                .registerComponent(Attack)
+                .registerComponent(Health)
+                .registerComponent(Age)
+                .registerComponent(Parent)
+                .registerComponent(Facing)
                 .registerComponent(CameraFocus)
                 .registerComponent(PhysicsBody)
+                .registerComponent(MovementSpeed)
                 .registerComponent(ColliderState)
                 .registerComponent(AIComponent)
                 .registerComponent(InputState)
@@ -42,6 +59,7 @@ export default class Platformer extends World {
                 .registerSystem(ControlSystem)
                 .registerSystem(KeyboardSystem)
                 .registerSystem(AISystem)
+                .registerSystem(AttackSystem)
                 .registerSystem(PhysicsSystem)
                 .registerSystem(ColliderSystem)
                 .registerSystem(CameraSystem)

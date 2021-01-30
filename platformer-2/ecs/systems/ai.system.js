@@ -33,14 +33,6 @@ export class AISystem extends System {
                 inp.states['right'] = false
             }
 
-            // if(Math.random() > 0.5){
-            //     inp.states['up'] = true
-
-            // }else {
-            //     inp.states['up'] = false
-
-            // }
-
         })
     }
 }

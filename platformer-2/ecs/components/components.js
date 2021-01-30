@@ -32,3 +32,102 @@ ColliderState.schema = {
 }
 
 export class AIComponent extends TagComponent {}
+export class MovementSpeed extends Component {
+    static create(value) {
+        return {
+            value
+        }
+    }
+}
+
+MovementSpeed.schema = {
+    value: {
+        type: Types.Number,
+        default: 1
+    }
+}
+
+export class Facing extends Component {
+    static create(value) {
+        return {
+            value
+        }
+    }
+    static LEFT = 'left'
+    static RIGHT = 'right'
+}
+
+Facing.schema = {
+    value: {
+        type: Types.String,
+        default: Facing.RIGHT
+    }
+}
+
+export class Parent extends Component {
+    static create(ref) {
+        return {
+            ref
+        }
+    }
+}
+
+Parent.schema = {
+    ref: {
+        type: Types.Ref
+    }
+}
+
+export class Age extends Component {
+    static create(current, max) {
+        return {
+            current,
+            max
+        }
+    }
+}
+
+Age.schema = {
+    current: {
+        type: Types.Number
+    },
+    max: {
+        type: Types.Number
+    }
+}
+
+export class Attack extends Component {
+    static create(damage) {
+        return {
+            damage
+        }
+    }
+}
+
+Attack.schema = {
+    damage: {
+        type: Types.Number
+    }
+}
+
+export class Health extends Component {
+    static create(current, max) {
+        return {
+            current,
+            max
+        }
+    }
+}
+
+Health.schema = {
+    current: {
+        type: Types.Number
+    },
+    max: {
+        type: Types.Number
+    }
+}
+
+export class Enemy extends TagComponent {
+
+}

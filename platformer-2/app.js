@@ -1,5 +1,9 @@
 import {
-    AIComponent
+    AIComponent,
+    Enemy,
+    Facing,
+    Health,
+    MovementSpeed
 } from "./ecs/components/components.js";
 import {
     CameraFocus
@@ -19,8 +23,11 @@ var game;
 
     game.createEntity()
         .addComponent(CameraFocus)
+        .addComponent(Health, Health.create(3, 3))
+        .addComponent(Facing)
         .addComponent(InputState)
         .addComponent(KeyboardState)
+        .addComponent(MovementSpeed, MovementSpeed.create(2))
         .addComponent(PhysicsBody, PhysicsBody.create(120, 0, 32, 48))
 
     await GameLoader.LoadLevel('level_01.json')
@@ -68,6 +75,10 @@ class GameLoader {
 
                     game.createEntity()
                         .addComponent(AIComponent)
+                        .addComponent(Enemy)
+                        .addComponent(Facing)
+                        .addComponent(Health, Health.create(2, 2))
+                        .addComponent(MovementSpeed, MovementSpeed.create(.45))
                         .addComponent(InputState)
                         .addComponent(PhysicsBody, PhysicsBody.create(colIndex * 32, rowIndex * 32, 32, 48))
 

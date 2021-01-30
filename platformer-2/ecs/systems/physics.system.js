@@ -9,6 +9,7 @@ import {
 } from "../components/components.js"
 import resolveElastic from "./displacement.physics.js"
 
+
 export class PhysicsBody extends Component {
 
     static create(x, y, width, height) {
@@ -80,6 +81,10 @@ PhysicsBody.schema = {
     collisions: {
         type: Types.Array,
         default: []
+    },
+    corporeal: {
+        type: Types.Boolean,
+        default: true
     }
 
 
@@ -141,7 +146,6 @@ export class PhysicsSystem extends System {
         //  Collision Detection
         //  We use a combination of the pixi sprites collider we set up, and quadtrees. It is almost certainly 
         map.forEach(aBody => {
-            if (aBody.static) return
             aBody.collisions = this.quadTree
                 .retrieve(aBody)
                 .filter(bBody => {
@@ -160,7 +164,10 @@ export class PhysicsSystem extends System {
         //  Collision Resolution
         map.forEach(aBody => {
             aBody.collisions.forEach(collision => {
-                resolveElastic(aBody, collision.body)
+                if (aBody.static) return
+                if (aBody.corporeal && collision.body.corporeal) {
+                    resolveElastic(aBody, collision.body)
+                }
             })
         })
 

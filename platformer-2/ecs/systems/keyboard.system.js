@@ -1,12 +1,18 @@
 import {
     Component,
-    System
+    System,
+    Types
 } from "../../node_modules/ecsy/build/ecsy.module.js"
 
 //  Taken from ECSY-two
 //  https://github.com/joshmarinacci/ecsy-two/blob/master/src/keyboard.js
 
 export class InputState extends Component {
+    static create(states) {
+        return {
+            states
+        }
+    }
     constructor() {
         super()
         this.states = {}
@@ -20,6 +26,13 @@ export class InputState extends Component {
 
     anyReleased() {
         return this.released
+    }
+}
+
+InputState.schema = {
+    states: {
+        type: Types.Ref,
+        default: {}
     }
 }
 
@@ -38,6 +51,9 @@ export class KeyboardState extends Component {
             'w': 'up',
             's': 'down',
             ' ': 'up',
+            '1': 'attack1',
+            '2': 'attack2',
+            '3': 'attack3',
         }
         this.on_keydown = (e) => {
             this.setKeyState(e.key, 'down')
