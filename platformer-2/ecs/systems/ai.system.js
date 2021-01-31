@@ -14,7 +14,15 @@ import {
 
 
 export class AISystem extends System {
-    execute(delta, time) {
+
+    constructor(world, attrs) {
+        super(world, attrs)
+        this.tick = 0
+    }
+    execute(delta) {
+        this.tick++
+        const tick = this.tick
+
         this.queries.subjects.results.forEach(ent => {
             let body = ent.getComponent(PhysicsBody)
             let inp = ent.getMutableComponent(InputState)
@@ -31,6 +39,10 @@ export class AISystem extends System {
             } else if (body.collisions.map(it => it.axis).includes('right')) {
                 inp.states['left'] = true
                 inp.states['right'] = false
+            }
+
+            if (this.tick % 100 === 5) {
+                inp.states['attack1'] = true
             }
 
         })

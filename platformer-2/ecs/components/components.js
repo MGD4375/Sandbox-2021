@@ -128,6 +128,18 @@ Health.schema = {
     }
 }
 
-export class Enemy extends TagComponent {
+export class Faction extends Component {
+    static PLAYER = 'player'
+    static ENEMIES = 'enemies'
 
+    static create(value) {
+        return {
+            value
+        }
+    }
+}
+Faction.schema = {
+    value: {
+        type: Types.String
+    }
 }

@@ -1,7 +1,7 @@
 import {
     AIComponent,
-    Enemy,
     Facing,
+    Faction,
     Health,
     MovementSpeed
 } from "./ecs/components/components.js";
@@ -24,6 +24,7 @@ var game;
     game.createEntity()
         .addComponent(CameraFocus)
         .addComponent(Health, Health.create(3, 3))
+        .addComponent(Faction, Faction.create(Faction.PLAYER))
         .addComponent(Facing)
         .addComponent(InputState)
         .addComponent(KeyboardState)
@@ -75,8 +76,8 @@ class GameLoader {
 
                     game.createEntity()
                         .addComponent(AIComponent)
-                        .addComponent(Enemy)
-                        .addComponent(Facing)
+                        .addComponent(Faction, Faction.create(Faction.ENEMIES))
+                        .addComponent(Facing, Facing.create(Facing.RIGHT))
                         .addComponent(Health, Health.create(2, 2))
                         .addComponent(MovementSpeed, MovementSpeed.create(.45))
                         .addComponent(InputState)

@@ -3,8 +3,8 @@ import {
     AIComponent,
     Attack,
     ColliderState,
-    Enemy,
     Facing,
+    Faction,
     Health,
     MovementSpeed,
     Parent
@@ -43,7 +43,7 @@ export default class Platformer extends World {
         return new Promise((resolve) => {
 
             const game = new Platformer()
-                .registerComponent(Enemy)
+                .registerComponent(Faction)
                 .registerComponent(Attack)
                 .registerComponent(Health)
                 .registerComponent(Age)

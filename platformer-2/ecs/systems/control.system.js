@@ -6,6 +6,7 @@ import {
     AIComponent,
     Attack,
     Facing,
+    Faction,
     MovementSpeed,
     Parent
 } from "../components/components.js"
@@ -31,6 +32,7 @@ export class ControlSystem extends System {
             const input = entity.getMutableComponent(InputState)
             const facing = entity.getMutableComponent(Facing)
             const ms = entity.getComponent(MovementSpeed)
+            const faction = entity.getComponent(Faction)
 
             body.xAcceleration = input.states.right ? ms.value :
                 input.states.left ? -ms.value : 0
@@ -59,6 +61,7 @@ export class ControlSystem extends System {
                     attackBody.static = true
 
                     game.createEntity()
+                        .addComponent(Faction, Faction.create(faction.value))
                         .addComponent(Attack, Attack.create(1))
                         .addComponent(Parent, Parent.create(entity))
                         .addComponent(Facing, Facing.create(Facing.LEFT))
@@ -71,6 +74,7 @@ export class ControlSystem extends System {
                     attackBody.static = true
 
                     game.createEntity()
+                        .addComponent(Faction, Faction.create(faction.value))
                         .addComponent(Attack, Attack.create(1))
                         .addComponent(Facing, Facing.create(Facing.RIGHT))
                         .addComponent(Parent, Parent.create(entity))
@@ -91,9 +95,6 @@ export class ControlSystem extends System {
                 input.states.attack3 = false
 
             }
-
-
-
         })
     }
 }

@@ -4,12 +4,11 @@ import {
 import {
     Age,
     Attack,
-    Enemy,
     Facing,
+    Faction,
     Health,
     Parent
 } from "../components/components.js"
-import resolveElastic from "./displacement.physics.js"
 import {
     PhysicsBody
 } from "./physics.system.js"
@@ -29,10 +28,19 @@ export class AttackSystem extends System {
             const age = entity.getMutableComponent(Age)
             const attack = entity.getComponent(Attack)
             const facing = entity.getComponent(Facing)
+            const faction = entity.getComponent(Faction)
             const parentBody = parent.getComponent(PhysicsBody)
             const parentFacing = parent.getComponent(Facing)
 
-            body.x = parentFacing.value === Facing.LEFT ? parentBody.x - parentBody.width - 16 : parentBody.x + parentBody.width;
+            if (!parent || !parentFacing) {
+                entity.remove()
+                return
+            }
+
+            body.x = parentFacing.value === Facing.LEFT ?
+                parentBody.x - parentBody.width - 20 :
+                parentBody.x + parentBody.width + 3;
+
             body.y = parentBody.y
 
             age.current++
@@ -42,11 +50,12 @@ export class AttackSystem extends System {
 
             body.collisions.forEach(collision => {
                 if (collision.body === parentBody) return
-                if (!collision.body.entity.getComponent(Enemy)) return
-
-                entity.remove()
-
+                const collisionFaction = collision.body.entity.getComponent(Faction)
+                if (!collisionFaction) return
+                if (collisionFaction.value === faction.value) return
                 const health = collision.body.entity.getMutableComponent(Health)
+                if (!health) return
+
                 const enemyBody = collision.body.entity.getMutableComponent(PhysicsBody)
                 health.current -= attack.damage
 
@@ -56,6 +65,9 @@ export class AttackSystem extends System {
                 if (health.current < 1) {
                     collision.body.entity.remove()
                 }
+
+                entity.remove()
+
             })
 
 
