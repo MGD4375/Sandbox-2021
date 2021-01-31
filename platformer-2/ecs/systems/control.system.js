@@ -3,7 +3,6 @@ import {
 } from "../../node_modules/ecsy/build/ecsy.module.js"
 import {
     Age,
-    AIComponent,
     Attack,
     Facing,
     Faction,
