@@ -1,0 +1,21 @@
+<head>
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="board" v-for="board in boards">
+            <div class="row" v-for="(row, rowIndex) in board.value">
+                <span class="cell" v-for="(cell, colIndex) in row">
+                    <span class="cell-content bold"
+                        v-if="cell !== 0 && cell === board.startingBoard[rowIndex][colIndex]">{{cell}}</span>
+                    <span class="cell-content" v-else-if="cell !== 0">{{cell}}</span>
+                </span>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+<script src="app.js"></script>

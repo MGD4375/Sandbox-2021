@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@100&display=swap');
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    color: darkslategray;
+    font-family: 'Lato', sans-serif;
+    font-weight: bold;
+    user-select: none;
+}
+
+.board {
+    margin: 30px;
+    display: inline-block;
+    background: black;
+    width: 311px;
+    padding: 12px;
+}
+
+.row {}
+
+.row:nth-child(3),
+.row:nth-child(6) {
+    margin-bottom: 12px;
+}
+
+.cell:nth-child(3),
+.cell:nth-child(6) {
+    margin-right: 12px;
+
+}
+
+.cell {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: whitesmoke;
+    margin: 1px;
+    text-align: center;
+    vertical-align: top;
+
+}
+
+.cell-content.bold {
+    background: darkslategray;
+    color: whitesmoke;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cell-content {
+    vertical-align: top;
+}
