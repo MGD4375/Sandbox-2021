@@ -1,7 +1,6 @@
 [package]
 name = "game_of_life"
 version = "0.1.0"
-authors = ["The wasm-bindgen Developers"]
 edition = "2018"
 
 [lib]

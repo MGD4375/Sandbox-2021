@@ -1,3 +1,4 @@
+Documentation
 https://rustwasm.github.io/docs/wasm-bindgen/examples/without-a-bundler.html
 
 # Build

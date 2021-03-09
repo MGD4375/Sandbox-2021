@@ -1,4 +1,5 @@
 use wasm_bindgen::prelude::*;
+mod utils;
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
@@ -18,4 +19,15 @@ pub fn main() -> Result<(), JsValue> {
 #[wasm_bindgen]
 pub fn add(a: u32, b: u32) -> u32 {
     a + b
+}
+
+#[wasm_bindgen]
+extern "C" {
+    fn alert(s: &str);
+}
+
+#[wasm_bindgen]
+pub fn greet(name: &str) {
+    let output = format!("Hello, {}", name);
+    alert(&output);
 }
