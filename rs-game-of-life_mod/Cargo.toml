@@ -8,6 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasm-bindgen = "0.2.71"
+fixedbitset = "0.3.2"
 
 [dependencies.web-sys]
 version = "0.3.4"
@@ -15,6 +16,7 @@ features = [
   'Document',
   'Element',
   'HtmlElement',
+  "console",
   'Node',
   'Window',
 ]

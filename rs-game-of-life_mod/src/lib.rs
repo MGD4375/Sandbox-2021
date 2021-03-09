@@ -1,33 +1,128 @@
 use wasm_bindgen::prelude::*;
+extern crate fixedbitset;
+use fixedbitset::FixedBitSet;
+extern crate web_sys;
+use web_sys::console;
 mod utils;
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
-    let window = web_sys::window().expect("no global `window` exists");
-    let document = window.document().expect("should have a document on window");
-    let body = document.body().expect("document should have a body");
-
-    // Manufacture the element we're gonna append
-    let val = document.create_element("p")?;
-    val.set_inner_html("Hello from Rust!");
-
-    body.append_child(&val)?;
-
     Ok(())
 }
 
 #[wasm_bindgen]
-pub fn add(a: u32, b: u32) -> u32 {
-    a + b
+pub struct Universe {
+    width: u32,
+    height: u32,
+    cells: FixedBitSet,
+    shadow_cells: FixedBitSet,
 }
 
 #[wasm_bindgen]
-extern "C" {
-    fn alert(s: &str);
+impl Universe {
+    pub fn new(width: u32, height: u32) -> Universe {
+        let size = (width * height) as usize;
+        let mut cells = FixedBitSet::with_capacity(size);
+        for i in 0..size {
+            cells.set(i, i % 2 == 0 || i % 7 == 0);
+        }
+
+        let shadow_cells = cells.clone();
+        Universe {
+            width,
+            height,
+            cells,
+            shadow_cells,
+        }
+    }
+
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn height(&self) -> u32 {
+        self.height
+    }
+
+    pub fn cells(&self) -> *const u32 {
+        self.cells.as_slice().as_ptr()
+    }
+
+    fn get_index(&self, row: u32, column: u32) -> usize {
+        (row * self.width + column) as usize
+    }
+
+    fn live_neighbor_count(&self, row: u32, column: u32) -> u8 {
+        let mut count = 0;
+
+        let north = if row == 0 { self.height - 1 } else { row - 1 };
+
+        let south = if row == self.height - 1 { 0 } else { row + 1 };
+        let west = if column == 0 {
+            self.width - 1
+        } else {
+            column - 1
+        };
+        let east = if column == self.width - 1 {
+            0
+        } else {
+            column + 1
+        };
+        let nw = self.get_index(north, west);
+        count += self.cells[nw] as u8;
+        let n = self.get_index(north, column);
+        count += self.cells[n] as u8;
+        let ne = self.get_index(north, east);
+        count += self.cells[ne] as u8;
+        let w = self.get_index(row, west);
+        count += self.cells[w] as u8;
+        let e = self.get_index(row, east);
+        count += self.cells[e] as u8;
+        let sw = self.get_index(south, west);
+        count += self.cells[sw] as u8;
+        let s = self.get_index(south, column);
+        count += self.cells[s] as u8;
+        let se = self.get_index(south, east);
+        count += self.cells[se] as u8;
+        count
+    }
+
+    pub fn tick(&mut self) {
+        for row in 0..self.height {
+            for col in 0..self.width {
+                let idx = self.get_index(row, col);
+                let cell = self.cells[idx];
+                let live_neighbors = self.live_neighbor_count(row, col);
+                self.shadow_cells.set(
+                    idx,
+                    match (cell, live_neighbors) {
+                        (true, x) if x < 2 => false,
+                        (true, 2) | (true, 3) => true,
+                        (true, x) if x > 3 => false,
+                        (false, 3) => true,
+                        (otherwise, _) => otherwise,
+                    },
+                );
+            }
+        }
+
+        self.cells = self.shadow_cells.clone();
+    }
 }
 
-#[wasm_bindgen]
-pub fn greet(name: &str) {
-    let output = format!("Hello, {}", name);
-    alert(&output);
+pub struct Timer<'a> {
+    name: &'a str,
+}
+
+impl<'a> Timer<'a> {
+    pub fn new(name: &'a str) -> Timer<'a> {
+        console::time_with_label(name);
+        Timer { name }
+    }
+}
+
+impl<'a> Drop for Timer<'a> {
+    fn drop(&mut self) {
+        console::time_end_with_label(self.name);
+    }
 }
