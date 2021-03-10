@@ -24,7 +24,7 @@ impl Universe {
         let size = (width * height) as usize;
         let mut cells = FixedBitSet::with_capacity(size);
         for i in 0..size {
-            cells.set(i, i % 2 == 0 || i % 7 == 0);
+            cells.set(i, js_sys::Math::random() < 0.5);
         }
 
         let shadow_cells = cells.clone();
