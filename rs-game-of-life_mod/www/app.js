@@ -36,14 +36,17 @@ const renderer = new CanvasRenderer(WIDTH, HEIGHT, 1);
         t1 = performance.now();
         ticks.push(t1 - t0)
 
-        var avDraw = average(draws)
-        var aTick = average(ticks)
 
-        console.log(
-            'tick: ' + (aTick / (avDraw + aTick)).toFixed(2),
-            'draw: ' + (avDraw / (avDraw + aTick)).toFixed(2)
-        );
 
+        if (ticks.length % 100 === 0) {
+            var avDraw = average(draws)
+            var aTick = average(ticks)
+
+            console.log(
+                'tick: ' + (aTick / (avDraw + aTick)).toFixed(2),
+                'draw: ' + (avDraw / (avDraw + aTick)).toFixed(2)
+            );
+        }
 
         requestAnimationFrame(renderLoop);
     };
