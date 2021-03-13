@@ -5,6 +5,7 @@ import CanvasRenderer from './renderer.js';
 
 const WIDTH = 1440 / 2;
 const HEIGHT = 900 / 2;
+
 const renderer = new CanvasRenderer(WIDTH, HEIGHT, 1);
 
 !async function run() {
@@ -58,6 +59,7 @@ const renderer = new CanvasRenderer(WIDTH, HEIGHT, 1);
 
         cells.getIndex = getIndex;
         cells.bitIsSet = bitIsSet;
+
         renderer.render(cells);
     };
 
