@@ -1,6 +1,8 @@
 use wasm_bindgen::prelude::*;
+
 extern crate fixedbitset;
 use fixedbitset::FixedBitSet;
+
 extern crate web_sys;
 use std::collections::HashMap;
 
@@ -27,7 +29,6 @@ impl Universe {
         }
 
         let mut lookup = HashMap::new();
-
 
         //  Lol, regret.
         for one in 0..=1 {
