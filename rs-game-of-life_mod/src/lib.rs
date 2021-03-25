@@ -4,11 +4,6 @@ use fixedbitset::FixedBitSet;
 extern crate web_sys;
 use std::collections::HashMap;
 
-#[wasm_bindgen(start)]
-pub fn main() -> Result<(), JsValue> {
-    Ok(())
-}
-
 #[wasm_bindgen]
 pub struct Universe {
     width: u32,
@@ -33,6 +28,8 @@ impl Universe {
 
         let mut lookup = HashMap::new();
 
+
+        //  Lol, regret.
         for one in 0..=1 {
             for two in 0..=1 {
                 for three in 0..=1 {
