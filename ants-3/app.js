@@ -22,21 +22,6 @@ const game = new Game()
     .registerSystem(DemoSystem)
 
 
-// for (var i = 0; i < 60; i++) {
-//     const entity = game.createEntity()
-//         .addComponent(
-//             PhysicsBody,
-//             PhysicsBody.create({
-//                 shape: PhysicsBody.SHAPES.BOX,
-//                 type: PhysicsBody.TYPES.STATIC,
-//                 height: (30 + (Math.random() * 60)),
-//                 width: (30 + (Math.random() * 60)),
-//                 x: 100 + (Math.random() * 600),
-//                 y: 100 + (Math.random() * 400),
-//             })
-//         )
-// }
-
 
 const entity = game.createEntity()
     .addComponent(Ant)

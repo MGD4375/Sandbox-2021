@@ -6,8 +6,11 @@ import {
     Types
 } from "../node_modules/ecsy/build/ecsy.module.js";
 
-const PixelsPerMeter = 50;
-const MetersPerPixel = 1 / PixelsPerMeter;
+//  Aliases. In a perfect ES6 world these would all be module imports
+const Engine = Matter.Engine,
+    World = Matter.World,
+    Events = Matter.Events,
+    Bodies = Matter.Bodies;
 
 export class PhysicsBody extends Component {
     static SHAPES = {
@@ -70,7 +73,6 @@ PhysicsBody.schema = {
 }
 
 
-
 export class BodyState extends SystemStateComponent {
     static create(ref) {
         return {
@@ -92,94 +94,70 @@ BodyState.schema = {
 export class PhysicsSystem extends System {
     constructor(world, attrs) {
         super(world, attrs);
-        this.simulation = planck.World();
-        // this.simulation = planck.World(planck.Vec2(0, 1));
-        this.collisions = [];
+        this.engine = Engine.create();
+        this.simulation = this.engine.world; //  I wish not everybody would use the term world, what about universe? Cosmos? Arena? We have options people.
+        this.engine.world.gravity.y = 0;
+        this.collisions = []
+        // an example of using collisionActive event on an engine
+        Events.on(this.engine, 'collisionStart', (event) => {
+            var pairs = event.pairs;
 
-
-        this.simulation.on('pre-solve', (contact, oldManifold) => {
-            var manifold = contact.getManifold();
-
-            if (manifold.pointCount == 0) {
-                return;
-            }
-
-            var fixtureA = contact.getFixtureA();
-            var fixtureB = contact.getFixtureB();
-
-            var worldManifold = contact.getWorldManifold();
-
-            for (var i = 0; i < manifold.pointCount; ++i) {
-                var cp = {};
-                cp.fixtureA = fixtureA;
-                cp.fixtureB = fixtureB;
-                cp.position = worldManifold.points[i];
-                cp.normal = worldManifold.normal;
-                cp.normalImpulse = manifold.points[i].normalImpulse;
-                cp.tangentImpulse = manifold.points[i].tangentImpulse;
-                cp.separation = worldManifold.separations[i];
-                const ecsId = cp.fixtureA.getBody().getUserData().ecsId
-                this.collisions[ecsId] = !!this.collisions[ecsId] ? this.collisions[ecsId] : []
-                this.collisions[ecsId].push(cp);
+            // change object colours to show those in an active collision (e.g. resting contact)
+            for (let i = 0; i < pairs.length; i++) {
+                const pair = pairs[i];
+                const bodyA = pair.bodyA;
+                const bodyB = pair.bodyB;
+                this.collisions[bodyA.ecsId] = !!this.collisions[bodyA.ecsId] ? this.collisions[bodyA.ecsId] : []
+                this.collisions[bodyA.ecsId].push(pair.bodyB)
             }
         });
-
-
     }
 
     execute(delta, time) {
         const sys = this;
 
-        sys.simulation.step(delta / 60);
+        Engine.update(sys.engine, time);
 
         sys.queries.create.results.forEach(entity => {
             const bodySpec = entity.getComponent(PhysicsBody);
 
-            const body = sys.simulation.createBody({
-                type: bodySpec.type,
-                bullet: false,
-                angularVelocity: bodySpec.angularVelocity,
-                position: {
-                    x: bodySpec.x * MetersPerPixel,
-                    y: bodySpec.y * MetersPerPixel
-                },
-                userData: { // We assign some userData for this body for future handling
-                    ecsId: entity.id
-                }
-            });
-
-
-            body.createFixture(
-                planck.Box(
-                    (bodySpec.width / 2) * MetersPerPixel,
-                    (bodySpec.height / 2) * MetersPerPixel)
+            var body = Bodies.rectangle(
+                bodySpec.x,
+                bodySpec.y,
+                bodySpec.width,
+                bodySpec.height
             );
 
+            body.ecsId = entity.id
+
+            World.add(sys.engine.world, [body]);
+
             entity.addComponent(BodyState, BodyState.create(body))
+
         });
 
         sys.queries.update.results.forEach(entity => {
             const bodyState = entity.getMutableComponent(BodyState);
-            const physicsBody = entity.getMutableComponent(PhysicsBody);
-            physicsBody.x = bodyState.ref.getPosition().x * PixelsPerMeter
-            physicsBody.y = bodyState.ref.getPosition().y * PixelsPerMeter
-            physicsBody.angle = bodyState.ref.getAngle();
+            const bodySpec = entity.getMutableComponent(PhysicsBody);
 
-            bodyState.collisions = !!sys.collisions[entity.id] ? sys.collisions[entity.id] : []
+            bodySpec.x = bodyState.ref.position.x
+            bodySpec.y = bodyState.ref.position.y
 
-            var f = bodyState.ref.getWorldVector(planck.Vec2(0, .01));
-            var p = bodyState.ref.getWorldPoint(planck.Vec2(0, .01));
-            bodyState.ref.applyLinearImpulse(f, p, false)
-            bodyState.ref.applyAngularImpulse(0.1)
+            bodyState.collisions = !!sys.collisions[entity.id] ? sys.collisions[entity.id] : [];
+            if (bodyState.collisions.length > 1) {
+                console.log(bodyState.collisions)
+
+            }
+
         })
 
         sys.queries.delete.results.forEach(entity => {
-            const box = entity.getComponent(BodyState).ref;
-            sys.simulation.destroyBody(box);
+            const body = entity.getComponent(BodyState).ref;
+            World.remove(sys.engine.world, [body]);
             entity.removeComponent(BodyState)
         })
 
-        sys.collisions = [];
+        sys.collisions = []
     }
 }
 
