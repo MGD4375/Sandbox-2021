@@ -1,0 +1,17 @@
+html,
+main {
+    background-color: black;
+    color: white;
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+}
+
+html {
+    overflow-y: auto;
+}
+
+body {
+    width: 800px;
+    margin: auto;
+}

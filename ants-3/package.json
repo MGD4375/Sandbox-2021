@@ -1,0 +1,8 @@
+{
+    "name": "morgans-engine",
+    "dependencies": {
+        "ecsy": "^0.4.2",
+        "planck-js": "^0.4.0-alpha.1",
+        "pixi.js": "^6.0.1"
+    }
+}
