@@ -26,17 +26,12 @@ export class PhysicsBody extends Component {
     }
 
     static create(options) {
-        const size = (options.height + options.width) / 100;
-
         //  Validation
         if (!options.x) console.warn('PhysicsBody needs an x position')
         if (!options.y) console.warn('PhysicsBody needs a y position')
         if (!options.height) console.warn('PhysicsBody needs a height')
         if (!options.width) console.warn('PhysicsBody needs a width')
         if (options.type !== PhysicsBody.TYPES.DYNAMIC && options.type !== PhysicsBody.TYPES.STATIC) console.warn('PhysicsBody needs a type: static or dynamic')
-
-        //  Sensible defaults
-        options.angularVelocity = !!options.angularVelocity ? options.angularVelocity : 0;
 
         return options;
     }
@@ -67,6 +62,10 @@ PhysicsBody.schema = {
     velocity: {
         type: Types.Number,
         default: 0
+    },
+    collisionGroup: {
+        type: Types.Number,
+        default: 1
     }
 }
 
@@ -126,6 +125,12 @@ export class PhysicsSystem extends System {
                     isStatic: bodySpec.type === PhysicsBody.TYPES.STATIC
                 }
             );
+
+            body.collisionFilter = {
+                'group': bodySpec.collisionGroup,
+                'category': 2,
+                'mask': 0,
+            };
 
             body.ecsId = entity.id
 

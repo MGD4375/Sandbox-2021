@@ -2,6 +2,7 @@ import {
     Not,
     System,
     SystemStateComponent,
+    TagComponent,
     Types
 } from "../node_modules/ecsy/build/ecsy.module.js";
 import {
@@ -20,6 +21,8 @@ BoxSpriteState.schema = {
         type: Types.Ref
     }
 }
+
+export class Render extends TagComponent {}
 
 export class RenderSystem extends System {
     constructor(world, attrs) {
@@ -86,12 +89,12 @@ export class RenderSystem extends System {
 
 RenderSystem.queries = {
     creates: {
-        components: [PhysicsBody, Not(BoxSpriteState)]
+        components: [Render, PhysicsBody, Not(BoxSpriteState)]
     },
     deletes: {
         components: [Not(PhysicsBody), BoxSpriteState]
     },
     updates: {
-        components: [PhysicsBody, BoxSpriteState]
+        components: [Render, PhysicsBody, BoxSpriteState]
     }
 };

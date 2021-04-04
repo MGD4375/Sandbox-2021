@@ -1,5 +1,7 @@
 import DemoSystem, {
-    Ant
+    Age,
+    Ant,
+    Pheramone
 } from "./ecs/demo.system.js.js";
 import Game from "./engine/game.js";
 import {
@@ -9,6 +11,7 @@ import {
 } from "./engine/physics.system.js";
 import {
     BoxSpriteState,
+    Render,
     RenderSystem
 } from "./engine/renderer.system.js";
 
@@ -19,6 +22,9 @@ const game = new Game(width, height)
     .registerComponent(PhysicsBody)
     .registerComponent(BodyState)
     .registerComponent(BoxSpriteState)
+    .registerComponent(Pheramone)
+    .registerComponent(Render)
+    .registerComponent(Age)
     .registerComponent(Ant)
     .registerSystem(PhysicsSystem)
     .registerSystem(RenderSystem)
@@ -27,7 +33,7 @@ const game = new Game(width, height)
 
 
 //  Top
-const thickness = 50
+const thickness = 2
 game.createEntity()
     .addComponent(
         PhysicsBody,
