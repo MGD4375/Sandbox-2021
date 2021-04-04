@@ -73,6 +73,7 @@ export default class DemoSystem extends System {
             bodySpec.velocity += 1
 
 
+            //  The problem with pheramones is there's many times more of them than ants. So the performance takes a massive dip.
             // if (age.value % 120 === 0) {
             //     const pheramoneE = this.world.createEntity()
             //         .addComponent(Pheramone)
