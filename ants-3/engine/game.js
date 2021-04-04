@@ -6,36 +6,24 @@ import {
 } from "./physics.system.js";
 
 export default class Game extends World {
-    constructor() {
+    constructor(width, height) {
         super()
         const game = this;
-        game.pixi = new PIXI.Application();
+        game.pixi = new PIXI.Application({
+            width: width, // default: 800
+            height: height, // default: 600
+            resolution: 1 // default: 1
+        });
+
+
+        this.width = width
+        this.height = height
 
         document.body.appendChild(game.pixi.view);
         game.pixi.renderer.backgroundColor = 0x7F7F7F;
 
-
-
-
         game.pixi.ticker.add(delta => {
             game.execute(delta)
-
-
-            for (var i = 0; i < 1; i++) {
-                const entity = game.createEntity()
-                    .addComponent(
-                        PhysicsBody,
-                        PhysicsBody.create({
-                            shape: PhysicsBody.SHAPES.BOX,
-                            type: PhysicsBody.TYPES.STATIC,
-                            height: (30 + (Math.random() * 60)) / 5,
-                            width: (30 + (Math.random() * 60)) / 5,
-                            x: 100 + (Math.random() * 600),
-                            y: 100 + (Math.random() * 400),
-                        })
-                    )
-            }
-
         })
 
     }

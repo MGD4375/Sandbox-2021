@@ -10,7 +10,8 @@ import {
 const Engine = Matter.Engine,
     World = Matter.World,
     Events = Matter.Events,
-    Bodies = Matter.Bodies;
+    Bodies = Matter.Bodies,
+    Body = Matter.Body
 
 export class PhysicsBody extends Component {
     static SHAPES = {
@@ -41,6 +42,12 @@ export class PhysicsBody extends Component {
     }
 }
 PhysicsBody.schema = {
+    shape: {
+        type: Types.String
+    },
+    type: {
+        type: Types.String
+    },
     x: {
         type: Types.Number
     },
@@ -53,20 +60,11 @@ PhysicsBody.schema = {
     height: {
         type: Types.Number
     },
-    angularVelocity: {
-        type: Types.Number
-    },
     angle: {
         type: Types.Number,
         default: 0
     },
-    shape: {
-        type: Types.String
-    },
-    type: {
-        type: Types.String
-    },
-    linearImpulse: {
+    velocity: {
         type: Types.Number,
         default: 0
     }
@@ -98,17 +96,16 @@ export class PhysicsSystem extends System {
         this.simulation = this.engine.world; //  I wish not everybody would use the term world, what about universe? Cosmos? Arena? We have options people.
         this.engine.world.gravity.y = 0;
         this.collisions = []
+        const sys = this
         // an example of using collisionActive event on an engine
-        Events.on(this.engine, 'collisionStart', (event) => {
+        Events.on(this.engine, 'collisionActive', (event) => {
             var pairs = event.pairs;
-
-            // change object colours to show those in an active collision (e.g. resting contact)
             for (let i = 0; i < pairs.length; i++) {
                 const pair = pairs[i];
                 const bodyA = pair.bodyA;
                 const bodyB = pair.bodyB;
                 this.collisions[bodyA.ecsId] = !!this.collisions[bodyA.ecsId] ? this.collisions[bodyA.ecsId] : []
-                this.collisions[bodyA.ecsId].push(pair.bodyB)
+                this.collisions[bodyA.ecsId].push(bodyB)
             }
         });
     }
@@ -125,7 +122,9 @@ export class PhysicsSystem extends System {
                 bodySpec.x,
                 bodySpec.y,
                 bodySpec.width,
-                bodySpec.height
+                bodySpec.height, {
+                    isStatic: bodySpec.type === PhysicsBody.TYPES.STATIC
+                }
             );
 
             body.ecsId = entity.id
@@ -140,24 +139,31 @@ export class PhysicsSystem extends System {
             const bodyState = entity.getMutableComponent(BodyState);
             const bodySpec = entity.getMutableComponent(PhysicsBody);
 
+            const xV = Math.cos(bodySpec.angle);
+            const yV = Math.sin(bodySpec.angle);
+
+            Body.setAngle(bodyState.ref, bodySpec.angle);
+            Body.setVelocity(bodyState.ref, {
+                x: xV,
+                y: yV
+            });
+
             bodySpec.x = bodyState.ref.position.x
             bodySpec.y = bodyState.ref.position.y
 
-            bodyState.collisions = !!sys.collisions[entity.id] ? sys.collisions[entity.id] : [];
-            if (bodyState.collisions.length > 1) {
-                console.log(bodyState.collisions)
-
-            }
-
+            bodyState.collisions = sys.collisions[entity.id] === undefined ? [] : sys.collisions[entity.id];
         })
 
         sys.queries.delete.results.forEach(entity => {
             const body = entity.getComponent(BodyState).ref;
-            World.remove(sys.engine.world, [body]);
+            World.remove(sys.engine.world, body);
             entity.removeComponent(BodyState)
         })
 
         sys.collisions = []
+
+
+
     }
 }
 
