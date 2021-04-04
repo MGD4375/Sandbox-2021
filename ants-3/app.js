@@ -85,3 +85,42 @@ game.createEntity()
             y: height / 2,
         })
     )
+
+
+for (var i = 0; i < 120; i++) {
+    game.createEntity()
+        .addComponent(Render)
+        .addComponent(
+            PhysicsBody,
+            PhysicsBody.create({
+                shape: PhysicsBody.SHAPES.BOX,
+                type: PhysicsBody.TYPES.STATIC,
+                height: 12,
+                width: 12,
+                x: 1300 + (Math.random() * 100),
+                y: 800 + (Math.random() * 100),
+                velocity: 0,
+                angle: Math.random() * 260
+
+            })
+        )
+}
+
+for (var i = 0; i < 120; i++) {
+    game.createEntity()
+        .addComponent(Render)
+        .addComponent(
+            PhysicsBody,
+            PhysicsBody.create({
+                shape: PhysicsBody.SHAPES.BOX,
+                type: PhysicsBody.TYPES.STATIC,
+                height: 12,
+                width: 12,
+                x: 200 + (Math.random() * 100),
+                y: 400 + (Math.random() * 100),
+                velocity: 0,
+                angle: Math.random() * 260
+
+            })
+        )
+}

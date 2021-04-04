@@ -95,7 +95,6 @@ export class PhysicsSystem extends System {
         this.simulation = this.engine.world; //  I wish not everybody would use the term world, what about universe? Cosmos? Arena? We have options people.
         this.engine.world.gravity.y = 0;
         this.collisions = []
-        const sys = this
         // an example of using collisionActive event on an engine
         Events.on(this.engine, 'collisionActive', (event) => {
             var pairs = event.pairs;
@@ -122,7 +121,7 @@ export class PhysicsSystem extends System {
                 bodySpec.y,
                 bodySpec.width,
                 bodySpec.height, {
-                    isStatic: bodySpec.type === PhysicsBody.TYPES.STATIC
+                    isStatic: bodySpec.type === PhysicsBody.TYPES.STATIC,
                 }
             );
 
@@ -144,14 +143,17 @@ export class PhysicsSystem extends System {
             const bodyState = entity.getMutableComponent(BodyState);
             const bodySpec = entity.getMutableComponent(PhysicsBody);
 
-            const xV = Math.cos(bodySpec.angle);
-            const yV = Math.sin(bodySpec.angle);
+            if (bodySpec.velocity > 0) {
+                const xV = Math.cos(bodySpec.angle);
+                const yV = Math.sin(bodySpec.angle);
 
-            Body.setAngle(bodyState.ref, bodySpec.angle);
-            Body.setVelocity(bodyState.ref, {
-                x: xV,
-                y: yV
-            });
+                Body.setAngle(bodyState.ref, bodySpec.angle);
+                Body.setVelocity(bodyState.ref, {
+                    x: xV,
+                    y: yV
+                });
+            }
+
 
             bodySpec.x = bodyState.ref.position.x
             bodySpec.y = bodyState.ref.position.y

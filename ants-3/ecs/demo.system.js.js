@@ -70,7 +70,7 @@ export default class DemoSystem extends System {
             const bodySpec = entity.getMutableComponent(PhysicsBody);
 
             bodySpec.angle += (-1 + (Math.random() * 2)) * 0.5
-            bodySpec.velocity += 1
+            bodySpec.velocity = 1
 
 
             //  The problem with pheramones is there's many times more of them than ants. So the performance takes a massive dip.
