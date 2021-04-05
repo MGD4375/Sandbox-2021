@@ -1,9 +1,6 @@
 import {
     World
 } from "../node_modules/ecsy/build/ecsy.module.js";
-import {
-    PhysicsBody
-} from "./physics.system.js";
 
 export default class Game extends World {
     constructor(width, height) {

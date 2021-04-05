@@ -1,6 +1,8 @@
 import {
     BodyState,
-    PhysicsBody
+    PhysicsBody,
+    SensorBody,
+    SensorState
 } from "../engine/physics.system.js";
 import {
     Render
@@ -12,8 +14,12 @@ import {
     Types
 } from "../node_modules/ecsy/build/ecsy.module.js";
 
+export class CarryingFood extends TagComponent {}
 export class Ant extends TagComponent {}
-export class Pheramone extends TagComponent {}
+export class Hive extends TagComponent {}
+export class Food extends TagComponent {}
+export class HomePheramone extends TagComponent {}
+export class FoodPheramone extends TagComponent {}
 export class Age extends Component {}
 Age.schema = {
     value: {
@@ -31,7 +37,10 @@ export default class DemoSystem extends System {
     }
     execute() {
         this.count++
-        if (this.count < (800)) {
+
+        const hive = this.queries.hives.results.find(it => it)
+
+        if (this.count < (60)) {
             this.world.createEntity()
                 .addComponent(Ant)
                 .addComponent(Age)
@@ -46,6 +55,17 @@ export default class DemoSystem extends System {
                         x: 400,
                         y: 300,
                         angle: Math.random() * 360
+                    })
+                )
+                .addComponent(
+                    SensorBody,
+                    SensorBody.create({
+                        shape: SensorBody.SHAPES.BOX,
+                        type: SensorBody.TYPES.DYNAMIC,
+                        height: 12,
+                        width: 12,
+                        collisionGroup: 2
+
                     })
                 )
         }
@@ -66,6 +86,7 @@ export default class DemoSystem extends System {
 
         this.queries.subjects.results.forEach(entity => {
             const bodyState = entity.getComponent(BodyState);
+            const sensorState = entity.getComponent(SensorState);
             const age = entity.getComponent(Age);
             const bodySpec = entity.getMutableComponent(PhysicsBody);
 
@@ -73,29 +94,77 @@ export default class DemoSystem extends System {
             bodySpec.velocity = 1
 
 
+            if (!entity.getComponent(CarryingFood)) {
+
+                const food = bodyState.collisions
+                    .find(cEntity => !!cEntity.getComponent(Food))
+
+                const target = sensorState.collisions
+                    .find(it => it.getComponent(Food))
+
+                if (!!food) {
+                    food.remove()
+                    entity.addComponent(CarryingFood)
+                } else if (!!target) {
+                    const targetBody = target.getComponent(PhysicsBody)
+
+                    var angleRadians = Math.atan2(
+                        targetBody.y - bodySpec.y,
+                        targetBody.x - bodySpec.x
+                    );
+
+                    bodySpec.angle = angleRadians;
+
+                }
+
+                //  TODO: If carrying food
+                //  And colliding with home home pheramone
+                //  veer left, else stay parallel
+            } else if (entity.getComponent(CarryingFood)) {
+                const hiveBody = hive.getComponent(PhysicsBody)
+
+
+                var angleRadians = Math.atan2(
+                    hiveBody.y - bodySpec.y,
+                    hiveBody.x - bodySpec.x
+                );
+
+                bodySpec.angle = angleRadians;
+
+                const hiveCollision = bodyState.collisions
+                    .find(cEntity => !!cEntity.getComponent(Hive))
+
+                if (!!hiveCollision) {
+                    entity.removeComponent(CarryingFood)
+                }
+            }
+
             //  The problem with pheramones is there's many times more of them than ants. So the performance takes a massive dip.
-            // if (age.value % 120 === 0) {
-            //     const pheramoneE = this.world.createEntity()
-            //         .addComponent(Pheramone)
-            //         .addComponent(Age)
-            //     pheramoneE.addComponent(
-            //         PhysicsBody,
-            //         PhysicsBody.create({
-            //             shape: PhysicsBody.SHAPES.BOX,
-            //             type: PhysicsBody.TYPES.STATIC,
-            //             height: 48,
-            //             width: 48,
-            //             x: bodySpec.x,
-            //             y: bodySpec.y,
-            //             collisionGroup: -1 * pheramoneE.id
-            //         })
-            //     )
-            // }
+            if (age.value % 30 === 0) {
+                this.world.createEntity()
+                    .addComponent(HomePheramone)
+                    .addComponent(Age)
+                    .addComponent(
+                        PhysicsBody,
+                        PhysicsBody.create({
+                            shape: PhysicsBody.SHAPES.BOX,
+                            type: PhysicsBody.TYPES.STATIC,
+                            height: 30,
+                            width: 30,
+                            x: bodySpec.x,
+                            y: bodySpec.y,
+                            collisionGroup: 2
+                        })
+                    )
+            }
         })
     }
 }
 
 DemoSystem.queries = {
+    hives: {
+        components: [Hive],
+    },
     subjects: {
         components: [Ant, Age, BodyState],
     },
@@ -103,6 +172,6 @@ DemoSystem.queries = {
         components: [Age]
     },
     pheramones: {
-        components: [Pheramone, Age]
+        components: [HomePheramone, Age]
     }
 }

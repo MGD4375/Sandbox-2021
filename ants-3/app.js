@@ -1,13 +1,19 @@
 import DemoSystem, {
     Age,
     Ant,
-    Pheramone
+    HomePheramone,
+    Hive,
+    Food,
+    CarryingFood,
+    FoodPheramone
 } from "./ecs/demo.system.js.js";
 import Game from "./engine/game.js";
 import {
     PhysicsBody,
     BodyState,
     PhysicsSystem,
+    SensorBody,
+    SensorState,
 } from "./engine/physics.system.js";
 import {
     BoxSpriteState,
@@ -20,11 +26,17 @@ const width = 1440,
 
 const game = new Game(width, height)
     .registerComponent(PhysicsBody)
+    .registerComponent(SensorBody)
+    .registerComponent(SensorState)
     .registerComponent(BodyState)
     .registerComponent(BoxSpriteState)
-    .registerComponent(Pheramone)
+    .registerComponent(CarryingFood)
+    .registerComponent(FoodPheramone)
+    .registerComponent(HomePheramone)
+    .registerComponent(Food)
     .registerComponent(Render)
     .registerComponent(Age)
+    .registerComponent(Hive)
     .registerComponent(Ant)
     .registerSystem(PhysicsSystem)
     .registerSystem(RenderSystem)
@@ -89,6 +101,7 @@ game.createEntity()
 
 for (var i = 0; i < 120; i++) {
     game.createEntity()
+        .addComponent(Food)
         .addComponent(Render)
         .addComponent(
             PhysicsBody,
@@ -108,6 +121,7 @@ for (var i = 0; i < 120; i++) {
 
 for (var i = 0; i < 120; i++) {
     game.createEntity()
+        .addComponent(Food)
         .addComponent(Render)
         .addComponent(
             PhysicsBody,
@@ -124,3 +138,19 @@ for (var i = 0; i < 120; i++) {
             })
         )
 }
+
+game.createEntity()
+    .addComponent(Render)
+    .addComponent(Hive)
+    .addComponent(
+        PhysicsBody,
+        PhysicsBody.create({
+            shape: PhysicsBody.SHAPES.BOX,
+            type: PhysicsBody.TYPES.STATIC,
+            height: 60,
+            width: 60,
+            x: 400,
+            y: 300,
+            velocity: 0
+        })
+    )

@@ -87,6 +87,17 @@ BodyState.schema = {
     }
 }
 
+export class SensorState extends BodyState {}
+export class SensorBody extends PhysicsBody {
+    static create(options) {
+        //  Validation
+        if (!options.height) console.warn('SensorBody needs a height')
+        if (!options.width) console.warn('SensorBody needs a width')
+        if (options.type !== PhysicsBody.TYPES.DYNAMIC && options.type !== PhysicsBody.TYPES.STATIC) console.warn('PhysicsBody needs a type: static or dynamic')
+
+        return options;
+    }
+}
 
 export class PhysicsSystem extends System {
     constructor(world, attrs) {
@@ -95,6 +106,8 @@ export class PhysicsSystem extends System {
         this.simulation = this.engine.world; //  I wish not everybody would use the term world, what about universe? Cosmos? Arena? We have options people.
         this.engine.world.gravity.y = 0;
         this.collisions = []
+        this.sensed = []
+
         // an example of using collisionActive event on an engine
         Events.on(this.engine, 'collisionActive', (event) => {
             var pairs = event.pairs;
@@ -102,8 +115,26 @@ export class PhysicsSystem extends System {
                 const pair = pairs[i];
                 const bodyA = pair.bodyA;
                 const bodyB = pair.bodyB;
-                this.collisions[bodyA.ecsId] = !!this.collisions[bodyA.ecsId] ? this.collisions[bodyA.ecsId] : []
-                this.collisions[bodyA.ecsId].push(bodyB)
+
+                if (bodyA.isSensor) {
+                    this.sensed[bodyA.ecsId] = !!this.sensed[bodyA.ecsId] ? this.sensed[bodyA.ecsId] : []
+                    this.sensed[bodyA.ecsId].push(bodyB.entity)
+                } else {
+                    this.collisions[bodyA.ecsId] = !!this.collisions[bodyA.ecsId] ? this.collisions[bodyA.ecsId] : []
+                    this.collisions[bodyA.ecsId].push(bodyB.entity)
+                }
+
+                if (bodyB.isSensor) {
+                    this.sensed[bodyB.ecsId] = !!this.sensed[bodyB.ecsId] ? this.sensed[bodyB.ecsId] : []
+                    this.sensed[bodyB.ecsId].push(bodyA.entity)
+
+                } else {
+                    this.collisions[bodyB.ecsId] = !!this.collisions[bodyB.ecsId] ? this.collisions[bodyB.ecsId] : []
+                    this.collisions[bodyB.ecsId].push(bodyA.entity)
+
+                }
+
+
             }
         });
     }
@@ -121,7 +152,7 @@ export class PhysicsSystem extends System {
                 bodySpec.y,
                 bodySpec.width,
                 bodySpec.height, {
-                    isStatic: bodySpec.type === PhysicsBody.TYPES.STATIC,
+                    isStatic: bodySpec.type === PhysicsBody.TYPES.STATIC
                 }
             );
 
@@ -132,6 +163,7 @@ export class PhysicsSystem extends System {
             };
 
             body.ecsId = entity.id
+            body.entity = entity
 
             World.add(sys.engine.world, [body]);
 
@@ -152,13 +184,14 @@ export class PhysicsSystem extends System {
                     x: xV,
                     y: yV
                 });
-            }
 
+            }
 
             bodySpec.x = bodyState.ref.position.x
             bodySpec.y = bodyState.ref.position.y
 
             bodyState.collisions = sys.collisions[entity.id] === undefined ? [] : sys.collisions[entity.id];
+
         })
 
         sys.queries.delete.results.forEach(entity => {
@@ -168,6 +201,59 @@ export class PhysicsSystem extends System {
         })
 
         sys.collisions = []
+
+        //  Sensors
+        sys.queries.sensorCreate.results.forEach(entity => {
+            const sensorSpec = entity.getComponent(SensorBody);
+            const physicsSpec = entity.getComponent(PhysicsBody);
+
+            var body = Bodies.rectangle(
+                physicsSpec.x,
+                physicsSpec.y,
+                sensorSpec.width,
+                sensorSpec.height, {
+                    isStatic: sensorSpec.type === SensorBody.TYPES.STATIC,
+                    isSensor: true
+                }
+            );
+
+            body.collisionFilter = {
+                'group': sensorSpec.collisionGroup,
+                'category': 2,
+                'mask': 0,
+            };
+
+            body.ecsId = entity.id
+            body.entity = entity
+
+            World.add(sys.engine.world, [body]);
+
+            entity.addComponent(SensorState, SensorState.create(body))
+
+        });
+
+        sys.queries.sensorUpdate.results.forEach(entity => {
+            const sensorState = entity.getMutableComponent(SensorState);
+            const sensorSpec = entity.getMutableComponent(SensorBody);
+            const bodySpec = entity.getMutableComponent(PhysicsBody);
+
+            sensorSpec.x = bodySpec.x
+            sensorSpec.y = bodySpec.y
+            sensorState.ref.position.x = bodySpec.x
+            sensorState.ref.position.y = bodySpec.y
+
+            sensorState.collisions = sys.sensed[entity.id] === undefined ? [] : sys.sensed[entity.id];
+
+        })
+
+        sys.queries.sensorDelete.results.forEach(entity => {
+            const body = entity.getComponent(SensorState).ref;
+            World.remove(sys.engine.world, body);
+            entity.removeComponent(SensorState)
+        })
+
+        sys.collisions = []
+        sys.sensed = []
 
 
 
@@ -183,5 +269,14 @@ PhysicsSystem.queries = {
     },
     delete: {
         components: [Not(PhysicsBody), BodyState]
-    }
+    },
+    sensorCreate: {
+        components: [PhysicsBody, SensorBody, Not(SensorState)]
+    },
+    sensorUpdate: {
+        components: [PhysicsBody, SensorBody, SensorState]
+    },
+    sensorDelete: {
+        components: [Not(SensorBody), SensorState]
+    },
 }
