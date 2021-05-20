@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css?family=Bungee|Cormorant+SC|Marcellus+SC|Raleway');
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Raleway', sans-serif;
+    height: 100%;
+    width: 100%;
+    background-color: #2a345f;
+    box-sizing: border-box;
+    color: whitesmoke;
+    overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Marcellus SC', serif;
+    letter-spacing: .2em;
+    margin: 0;
+    padding: 0;
+}
+
+.canvas-wrapper {
+    display: inline-flex;
+    align-items: center;
+    z-index: 10;
+    justify-content: center;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: -o-crisp-edges;
+    image-rendering: pixelated;
+    -ms-interpolation-mode: nearest-neighbor;
+}
+
+canvas {
+    height: 100vmin;
+    width: 100vmin;
+}
